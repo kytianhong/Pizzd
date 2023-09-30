@@ -20,8 +20,7 @@ public interface LngLatHandling{
         double x1_x2 = startPosition.lng() - endPosition.lng();
         double y1_y2 = startPosition.lat() - endPosition.lat();
         double distance_sq = (x1_x2 * x1_x2) +  (y1_y2 * y1_y2);
-        double distance = Math.sqrt(distance_sq);
-        return distance;
+        return Math.sqrt(distance_sq);
     }
 
     /**
@@ -78,24 +77,12 @@ public interface LngLatHandling{
     default LngLat nextPosition(LngLat startPosition, double angle){
         double a = startPosition.lng() * Math.cos(angle);
         double b = startPosition.lat() * Math.sin(angle);
-        double x = startPosition.lng();
-        double y = startPosition.lat();
-        if(angle>=0 && angle<90){
-            x = x + a;
-            y = y + b;
-        }else if(angle>=90 && angle <180){
-            x = x - a;
-            y = y + b;
-        }else if(angle>=180 && angle <270){
-            x = x - a;
-            y = y - b;
-        }else if(angle>=270 && angle <360){
-            x = x + a;
-            y = y - b;
+        double x = startPosition.lng() + a;
+        double y = startPosition.lat() + b;
+        if(angle>=0 && angle<360){
+            return new LngLat(x,y);
         }else{
             return startPosition;
         }
-        LngLat next = new LngLat(x,y);
-        return next;
     }
 }

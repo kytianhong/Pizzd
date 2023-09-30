@@ -4,7 +4,7 @@ import uk.ac.ed.inf.ilp.constant.OrderStatus;
 import uk.ac.ed.inf.ilp.constant.OrderValidationCode;
 import uk.ac.ed.inf.ilp.constant.SystemConstants;
 import uk.ac.ed.inf.ilp.data.*;
-import uk.ac.ed.inf.interfaces.OrderValidation;
+import uk.ac.ed.inf.interfaces.OrderValidator;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -36,17 +36,17 @@ public class TestIlpJar {
         order.setPizzasInOrder(new Pizza[]{new Pizza("A", 1212)});
         order.setPriceTotalInPence(1212 + SystemConstants.ORDER_CHARGE_IN_PENCE);
 
-//        var validatedOrder =
-//                new OrderValidation().validateOrder(order,
-//                        new Restaurant[]{new Restaurant("myRestaurant",
-//                                new LngLat(55.945535152517735, -3.1912869215011597),
-//                                new DayOfWeek[]{DayOfWeek.MONDAY, DayOfWeek.FRIDAY},
-//                                new Pizza[]{new Pizza("Pizza A", 2300)})
-//                        });
-//
-//        System.out.println("order validation resulted in status: " +
-//                validatedOrder.getOrderStatus() +
-//                " and validation code: " +
-//                validatedOrder.getOrderValidationCode());
+        var validatedOrder =
+                new OrderValidator().validateOrder(order,
+                        new Restaurant[]{new Restaurant("myRestaurant",
+                                new LngLat(55.945535152517735, -3.1912869215011597),
+                                new DayOfWeek[]{DayOfWeek.MONDAY, DayOfWeek.FRIDAY},
+                                new Pizza[]{new Pizza("Pizza A", 2300)})
+                        });
+
+        System.out.println("order validation resulted in status: " +
+                validatedOrder.getOrderStatus() +
+                " and validation code: " +
+                validatedOrder.getOrderValidationCode());
     }
 }

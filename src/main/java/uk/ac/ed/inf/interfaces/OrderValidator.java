@@ -78,13 +78,13 @@ public class OrderValidator implements OrderValidation{
     }
 
     private Restaurant getRestaurant(Pizza[] pizzas, Restaurant[] definedRestaurants){
-        Set<Pizza> pizzaSet = new HashSet<>(Arrays.asList(pizzas));
+        List<String> pizzaNames = pizzaName(pizzas);
         Restaurant bestRestaurant = null;
         for (Restaurant r : definedRestaurants) {
             Pizza[] menu = r.menu();
             //use set here, quicker
-            Set<Pizza> menuSet = new HashSet<>(Arrays.asList(menu));
-            if (menuSet.containsAll(pizzaSet)) {
+            List<String> menuPizzas = pizzaName(menu);
+            if (new HashSet<>(menuPizzas).containsAll(pizzaNames)) {
                 bestRestaurant = r; // all pizza in one menu
             }
         }
@@ -98,14 +98,23 @@ public class OrderValidator implements OrderValidation{
         }
         return false;
     }
+    private List<String> pizzaName(Pizza[] pizzas){
+        List<String> names = new ArrayList<String>();
+        for (Pizza p :pizzas) {
+            names.add(p.name());
+        }
+        return names;
+    }
+
     //check whether pizzas from one restaurant
     private boolean pizzasFromMenu(Pizza[] pizzas, Restaurant[] definedRestaurants) {
-        Set<Pizza> pizzaSet = new HashSet<>(Arrays.asList(pizzas));
+        List<String> pizzaNames = pizzaName(pizzas);
+//        Set<String> pizzaSet = new HashSet<>(pizzaNames);
         for (Restaurant r : definedRestaurants) {
             Pizza[] menu = r.menu();
-            //use set here, quicker
-            Set<Pizza> menuSet = new HashSet<>(Arrays.asList(menu));
-            if (menuSet.containsAll(pizzaSet)) {
+            List<String> menuPizzas = pizzaName(menu);
+//            Set<String> menuSet = new HashSet<>(menuPizzas);
+            if (new HashSet<>(menuPizzas).containsAll(pizzaNames)) {
                 return true; // all pizza in one menu
             }
         }

@@ -5,6 +5,8 @@ import uk.ac.ed.inf.ilp.data.LngLat;
 import uk.ac.ed.inf.ilp.data.NamedRegion;
 import uk.ac.ed.inf.ilp.interfaces.LngLatHandling;
 
+import java.awt.geom.Path2D;
+import java.awt.geom.Point2D;
 import java.lang.Math;
 
 /**
@@ -61,12 +63,18 @@ public class LngLatHandler implements LngLatHandling {
      * @return if the position is inside the region (including the border)
      */
     public boolean isInRegion(LngLat position, NamedRegion region){
-        LngLat top_left = region.vertices()[0];
-        LngLat bot_right = region.vertices()[2];
-
-        if ( position.lng() >= top_left.lng() && position.lng() <= bot_right.lng()  ){
-            return position.lat() <= top_left.lat() && position.lat() >= bot_right.lat();
-        }else return false;
+        Path2D.Double area = new Path2D.Double();
+        for (LngLat vertex : region.vertices()) {
+            Point2D.Double point = new Point2D.Double(vertex.lng(), vertex.lat());
+            if (area.getCurrentPoint() == null) {
+                area.moveTo(point.getX(), point.getY());
+            } else {
+                area.lineTo(point.getX(), point.getY());
+            }
+        }
+        area.closePath();
+        Point2D.Double point = new Point2D.Double(position.lng(), position.lat());
+        return area.contains(point);
     }
 
     /**
@@ -76,8 +84,8 @@ public class LngLatHandler implements LngLatHandling {
      * @return the new position after the angle is used
      */
     public LngLat nextPosition(LngLat startPosition, double angle){
-        double a = startPosition.lng() * Math.cos(angle);
-        double b = startPosition.lat() * Math.sin(angle);
+        double a = SystemConstants.DRONE_MOVE_DISTANCE * Math.cos(angle);
+        double b = SystemConstants.DRONE_MOVE_DISTANCE * Math.sin(angle);
         double x = startPosition.lng() + a;
         double y = startPosition.lat() + b;
         if(angle>=0 && angle<360){

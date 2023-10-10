@@ -33,7 +33,7 @@ public class TestIlpJar {
         // get a random restaurant
 
         // and load the order items plus the price
-        order.setPizzasInOrder(new Pizza[]{new Pizza("A", 1212) , new Pizza("Pizza B", 2300)});
+        order.setPizzasInOrder(new Pizza[]{new Pizza("A", 1212) , new Pizza("Pizza A", 2300)});
         order.setPriceTotalInPence(3512 + SystemConstants.ORDER_CHARGE_IN_PENCE);
 
         var validatedOrder =

@@ -1,4 +1,4 @@
-package uk.ac.ed.inf.interfaces;
+package uk.ac.ed.inf;
 
 import uk.ac.ed.inf.ilp.constant.SystemConstants;
 import uk.ac.ed.inf.ilp.data.LngLat;

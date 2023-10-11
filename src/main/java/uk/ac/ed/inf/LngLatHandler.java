@@ -84,8 +84,9 @@ public class LngLatHandler implements LngLatHandling {
      * @return the new position after the angle is used
      */
     public LngLat nextPosition(LngLat startPosition, double angle){
-        double a = SystemConstants.DRONE_MOVE_DISTANCE * Math.cos(angle);
-        double b = SystemConstants.DRONE_MOVE_DISTANCE * Math.sin(angle);
+        double radians = Math.toRadians(angle);
+        double a = SystemConstants.DRONE_MOVE_DISTANCE * Math.cos(radians);
+        double b = SystemConstants.DRONE_MOVE_DISTANCE * Math.sin(radians);
         double x = startPosition.lng() + a;
         double y = startPosition.lat() + b;
         if(angle>=0 && angle<360){

@@ -25,6 +25,29 @@
       <version>4.11</version>
       <scope>test</scope>
     </dependency>
+
+    <!-- JSON Processing (Jackson) -->
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <version>2.15.3</version>
+    </dependency>
+
+    <!-- HTTP Client -->
+    <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpclient</artifactId>
+      <version>4.5.14</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.sample</groupId>
+      <artifactId>sample</artifactId>
+      <version>1.0</version>
+      <scope>system</scope>
+      <systemPath>${project.basedir}/library/IlpDataObjects.jar</systemPath>
+    </dependency>
+
   </dependencies>
 
   <build>

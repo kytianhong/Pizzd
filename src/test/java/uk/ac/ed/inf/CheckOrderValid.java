@@ -54,3 +54,17 @@ public class CheckOrderValid {
                 validatedOrder.getOrderValidationCode());
     }
 }
+//System.out.println("ILP Test Application using the IlpDataObjects.jar file");
+//        LngLat startPosition = new LngLat(4,56);
+//        LngLat Lefttop = new LngLat(-3.192473,55.946233);
+//        LngLat Leftbot = new LngLat(-3.192473,55.942617);
+//        LngLat Rightbot = new LngLat(-3.184319,55.942617);
+//        LngLat Righttop = new LngLat(-3.184319,55.946233);
+////        LngLat []CentralArea = [Lefttop,Leftbot];
+//        NamedRegion central = new NamedRegion("central area",new LngLat[]{new LngLat(1,55),
+//                new LngLat(1,60),new LngLat(3,60),new LngLat(3,55)});
+//        if (new LngLatHandler().isInRegion(startPosition,central)){
+//            System.out.println("in region");
+//        }else {
+//            System.out.println("not in region");
+//        }

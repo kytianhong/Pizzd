@@ -51,7 +51,7 @@ public class GetOrder {
                 extractedOrders.add(i);
             }
         }
-//        Order[] datedOrders = extractedOrders.toArray();
+        Order[] datedOrders = (Order[]) extractedOrders.toArray();
 //        return datedOrders;
     }
 

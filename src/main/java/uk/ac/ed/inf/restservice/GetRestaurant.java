@@ -11,12 +11,12 @@ public class GetRestaurant {
     public static final String RESTAURANT_URL = "restaurants";
 
     public static void main(String[] args) {
-//        if (args.length < 1){
-//            System.err.println("the base URL must be provided");
-//            System.exit(1);
-//        }
-        var baseUrl = "https://ilp-rest.azurewebsites.net";
-//        var baseUrl = args[0];
+        if (args.length < 1){
+            System.err.println("the base URL must be provided");
+            System.exit(1);
+        }
+//        var baseUrl = "https://ilp-rest.azurewebsites.net";
+        var baseUrl = args[0];
         if (baseUrl.endsWith("/") == false){
             baseUrl += "/";
         }

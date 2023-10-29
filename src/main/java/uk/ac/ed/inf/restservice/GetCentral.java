@@ -2,22 +2,15 @@ package uk.ac.ed.inf.restservice;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import uk.ac.ed.inf.restservice.data.Restaurant;
+import uk.ac.ed.inf.restservice.data.CentralArea;
 
 import java.io.IOException;
 import java.net.URL;
-
-public class TestGetClient {
-
-    public static final String RESTAURANT_URL = "restaurants";
-
+public class GetCentral {
+    public static final String CENTRAL_AREA_URL = "centralArea";
     public static void main(String[] args) {
-        if (args.length < 1){
-            System.err.println("the base URL must be provided");
-            System.exit(1);
-        }
+        var baseUrl = "https://ilp-rest.azurewebsites.net";
 
-        var baseUrl = args[0];
         if (baseUrl.endsWith("/") == false){
             baseUrl += "/";
         }
@@ -33,8 +26,9 @@ public class TestGetClient {
         ObjectMapper mapper = new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
         try {
-            var restaurants = mapper.readValue(new URL(baseUrl + RESTAURANT_URL), Restaurant[].class);
-            System.out.println("read all restaurants");
+            var central = mapper.readValue(new URL(baseUrl + CENTRAL_AREA_URL), CentralArea.class);
+            System.out.println("read all central area");
+//            System.out.println(central.vertices()[1]);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

@@ -14,27 +14,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GetValidOrder {
-    public static final String ORDER_URL = "orders";
-    public static final String RESTAURANT_URL = "restaurants";
-    public static List<Order> main(String[] args) {
-        if (args.length < 1){
-            System.err.println("the base URL must be provided");
-            System.exit(1);
-        }
-
-        var baseUrl = args[1];
-        LocalDate date = LocalDate.parse(args[0]);
-        if (baseUrl.endsWith("/") == false){
-            baseUrl += "/";
-        }
-
-        try {
-            var temp = new URL(baseUrl);
-        } catch (Exception x) {
-            System.err.println("The URL is invalid: " + x);
-            System.exit(2);
-        }
-
+    private static final String ORDER_URL = "orders";
+    private static final String RESTAURANT_URL = "restaurants";
+    public List<Order> getValidOrder(String baseUrl,LocalDate date) {
 
         ObjectMapper mapper = new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());

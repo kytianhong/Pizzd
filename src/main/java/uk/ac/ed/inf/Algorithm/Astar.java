@@ -16,10 +16,6 @@ public class Astar {
         }
         return neighbors;
     }
-    public static float cost(LngLat fromId, LngLat toId) {
-
-        return 0.0f;
-    }
     public static double heuristic(LngLat a, LngLat b) {
         double x1 = a.lng();
         double y1 = a.lat();

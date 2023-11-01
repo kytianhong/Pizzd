@@ -3,14 +3,12 @@ package uk.ac.ed.inf.Algorithm;
 import uk.ac.ed.inf.ilp.constant.SystemConstants;
 import uk.ac.ed.inf.ilp.data.LngLat;
 import uk.ac.ed.inf.Interfaces.LngLatHandler;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.PriorityQueue;
+
+import java.util.*;
 
 public class Astar {
     public static List<LngLat> neighbors(LngLat position) {
-        List<LngLat> neighbors = null;
+        List<LngLat> neighbors = new ArrayList<>();
         for (double angle=0; angle<360;){
             LngLat exposition = new LngLatHandler().nextPosition(position, angle);
             neighbors.add(exposition);

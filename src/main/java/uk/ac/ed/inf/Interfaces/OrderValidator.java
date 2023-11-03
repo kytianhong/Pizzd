@@ -53,7 +53,7 @@ public class OrderValidator implements OrderValidation{
             //check if the menu items selected legal in the order
             orderToValidate.setOrderValidationCode(OrderValidationCode.PIZZA_FROM_MULTIPLE_RESTAURANTS);
         } else if (!restaurantOpen(Objects.requireNonNull(getRestaurant(pizzas, definedRestaurants)),orderDate)) {
-            //if the order is valid on the given date for the involved restaurants (opening days)
+            //if the order is valid on the given date for the involved restaurants (opening day)
             orderToValidate.setOrderValidationCode(OrderValidationCode.RESTAURANT_CLOSED);
         } else {//no error, change order status
             orderToValidate.setOrderValidationCode(OrderValidationCode.NO_ERROR);
@@ -134,11 +134,9 @@ public class OrderValidator implements OrderValidation{
     /**check if the menu items selected legal in the order*/
     private boolean pizzasFromMenu(Pizza[] pizzas, Restaurant[] definedRestaurants) {
     //check whether pizzas from one restaurant
-//        List<String> pizzaNames = pizzaName(pizzas);
         List<Pizza> pizzaSet = Arrays.asList(pizzas);
         for (Restaurant r : definedRestaurants) {
             Pizza[] menu = r.menu();
-//            List<String> menuPizzas = pizzaName(menu);
             List<Pizza> menuSet = Arrays.asList(menu);
             if (new HashSet<>(menuSet).containsAll(pizzaSet)) {
                 return true; // all pizza in one menu
@@ -148,7 +146,7 @@ public class OrderValidator implements OrderValidation{
     }
 
     //Functions deal with restaurants
-    private Restaurant getRestaurant(Pizza[] pizzas, Restaurant[] definedRestaurants){
+    public Restaurant getRestaurant(Pizza[] pizzas, Restaurant[] definedRestaurants){
     //get which restaurant the order from
         List<Pizza> pizzaSet = Arrays.asList(pizzas);
         Restaurant bestRestaurant = null;

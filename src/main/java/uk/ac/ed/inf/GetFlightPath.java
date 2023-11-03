@@ -2,15 +2,24 @@ package uk.ac.ed.inf;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import uk.ac.ed.inf.Algorithm.Astar;
+import uk.ac.ed.inf.ilp.data.LngLat;
 import uk.ac.ed.inf.ilp.data.NamedRegion;
 import uk.ac.ed.inf.ilp.data.Order;
+import uk.ac.ed.inf.restservice.data.FlightPath;
+import uk.ac.ed.inf.restservice.data.ToWriteFlight;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class GetFlightPath {
+    private static final LngLat APPLETON =new LngLat(-3.186874, 55.944494);
     private static final String NO_FLY_ZONE_URL = "noFlyZones";
     private static final String CENTRAL_AREA_URL = "centralArea";
     public static NamedRegion[] getNonFlyZones(String baseUrl){
@@ -57,13 +66,43 @@ public class GetFlightPath {
             System.err.println("The URL is invalid: " + x);
             System.exit(2);
         }
-
-        List<Order>validatedOrder = new OrderProcess().getValidOrder(baseUrl,date);
-        //call write deliveries method
-        OrderProcess.writeDeliveries(validatedOrder,date);
+        // call order process to get the day's order and its corresponding destination
+        Map<Order, LngLat> validatedOrder = new OrderProcess().getValidOrder(baseUrl,date);
         //call get nonFlyZone and central method
         NamedRegion[] nonFlyZones = getNonFlyZones(baseUrl);
         NamedRegion central = getCentralArea(baseUrl);
+        //new a list which contain the final flight path list of all orders
+        List<ToWriteFlight> flightList=new ArrayList<>();
+        for (Order i :validatedOrder.keySet()) {
+            // get the corresponding destination
+            LngLat destination = validatedOrder.get(i);
+            //get the flight path of order i
+            List<FlightPath> flightPaths = Astar.aStarSearch(APPLETON,destination,central,nonFlyZones);
+            // rebuild the write_flight_path
+            List<ToWriteFlight> toWriteFlights = flightPaths.stream()
+                    .map(flightPath -> new ToWriteFlight(
+                            i.getOrderNo(),
+                            flightPath.fromLongitude(),
+                            flightPath.fromLatitude(),
+                            flightPath.angle(),
+                            flightPath.toLongitude(),
+                            flightPath.toLatitude()
+                    )).collect(Collectors.toList());
+            //add all flight path of current order into final flight path list
+            flightList.addAll(toWriteFlights);
+        }
+
+        //write file
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+        try {
+            String formattedDate = date.toString();
+            String fileName = "flightpath-" + formattedDate + ".json";
+            objectMapper.writeValue(new File("resultfiles/"+fileName), flightList);
+            System.out.println("Dated orders saved to datedOrders.json");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
     }
 }

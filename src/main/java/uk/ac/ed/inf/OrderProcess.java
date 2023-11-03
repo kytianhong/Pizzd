@@ -68,7 +68,7 @@ public class OrderProcess {
 //
 //    }
 
-    public static void writeDeliveries(List<Order> validatedOrder, LocalDate date){
+    public static void writeDeliveries(Set<Order> validatedOrder, LocalDate date){
         // Use Java streams transform Order to Deliveries
         List<Deliveries> deliveriesList = validatedOrder.stream()
                 .map(order -> new Deliveries(

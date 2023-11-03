@@ -104,6 +104,6 @@ public class GetFlightPath {
             throw new RuntimeException(e);
         }
         // write deliver
-        OrderProcess.writeDeliveries((List<Order>) validatedOrder.keySet(), date);
+        OrderProcess.writeDeliveries(validatedOrder.keySet(), date);
     }
 }

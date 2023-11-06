@@ -57,29 +57,53 @@ public class Astar {
 
         while (!frontier.isEmpty()) {
             LngLat current = frontier.poll();
-
-            if (current.equals(destination)) {
+//            System.out.println(current);
+            if (new LngLatHandler().isCloseTo(current,destination)) {
                 break;
             }
             Map<LngLat, Double> neighbors=neighbors(current, central, nonFlyZones);
             for (LngLat next : neighbors.keySet()) {
-
                 double newCost = costSoFar.get(current) + SystemConstants.DRONE_MOVE_DISTANCE;
                 if (!costSoFar.containsKey(next) || newCost < costSoFar.get(next)) {
                     costSoFar.put(next, newCost);
                     frontier.add(next);
                     double angle =  neighbors.get(next);
                     cameFrom.put(next,angle);
-                    //add new flight path point
-                    flightPaths.add(new FlightPath(current.lng(), current.lat(),angle,next.lng(),next.lat()));
+//                    FlightPath f = new FlightPath(current.lng(),current.lat(),angle,next.lng(),next.lat());
+//                    flightPaths.add(f);
+//                    System.out.println(f);
+                    //add new flight path
                 }
             }
+            FlightPath f = new FlightPath(current.lng(),current.lat(),cameFrom.get(current));
+            flightPaths.add(f);
+            System.out.println(f);
         }
-
+//        System.out.println(cameFrom);
+//        System.out.println(cameFrom.size());
         return flightPaths;
     }
 
     public static void main(String[] args) {
-        // You can test your A* search algorithm here
+        // test A* search algorithm here
+        LngLat APPLETON =new LngLat(-3.186874, 55.944494);
+        LngLat RESTAURANT = new LngLat(-3.1912869215011597, 55.945535152517735);
+        NamedRegion CentralArea= new NamedRegion("central",
+                                new LngLat[]{new LngLat(-3.192473, 55.946233),
+                                             new LngLat(-3.192473,55.942617),
+                                             new LngLat(-3.184319,55.942617),
+                                             new LngLat(-3.184319,55.946233)});
+
+        NamedRegion[] NonFlightZone = new NamedRegion[]{
+                                new NamedRegion("George Square Area",
+                                new LngLat[]{new LngLat(-3.190578818321228,55.94402412577528),
+                                        new LngLat(-3.1899887323379517,55.94284650540911),
+                                        new LngLat(-3.187097311019897,55.94328811724263),
+                                        new LngLat(-3.187682032585144,55.944477740393744),
+                                        new LngLat(-3.190578818321228,55.94402412577528)})
+                                };
+
+        List<FlightPath> flightPaths  = aStarSearch(RESTAURANT,APPLETON,CentralArea,NonFlightZone);
+        System.out.println(flightPaths.size());
     }
 }

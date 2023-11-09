@@ -1,15 +1,12 @@
 package uk.ac.ed.inf;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import uk.ac.ed.inf.Algorithm.Astar;
 import uk.ac.ed.inf.ilp.data.LngLat;
 import uk.ac.ed.inf.ilp.data.NamedRegion;
 import uk.ac.ed.inf.ilp.data.Order;
-import uk.ac.ed.inf.restservice.data.Feature;
 import uk.ac.ed.inf.restservice.data.FlightPath;
-import uk.ac.ed.inf.restservice.data.Geometry;
 import uk.ac.ed.inf.restservice.data.ToWriteFlight;
 
 import java.io.File;
@@ -50,37 +47,38 @@ public class GetFlightPath {
             throw new RuntimeException(e);
         }
     }
-
-    public static List<ToWriteFlight> getFlightPath(String baseUrl, LocalDate date){
+//List<ToWriteFlight>
+    public static  void getFlightPath(String baseUrl, LocalDate date){
         // call order process to get the day's order and its corresponding destination
         Map<Order, LngLat> validatedOrder = new OrderProcess().getValidOrder(baseUrl,date);
         //call get nonFlyZone and central method
         NamedRegion[] nonFlyZones = getNonFlyZones(baseUrl);
         NamedRegion central = getCentralArea(baseUrl);
         //new a list which contain the final flight path list of all orders
-        List<FlightPath> flightList=new ArrayList<>();
+        List<FlightPath> droneMoveList=new ArrayList<>();
         List<ToWriteFlight> toWriteFlights = new ArrayList<>();
         for (Order i :validatedOrder.keySet()) {
             // get the corresponding destination
             LngLat destination = validatedOrder.get(i);
             //get the flight path of order i
-            List<FlightPath> flightPaths = Astar.aStarSearch(APPLETON,destination,central,nonFlyZones);
+            List<FlightPath> flightPaths = new Astar().aStarSearch(APPLETON,destination,central,nonFlyZones);
+            //add all drone move path of current order into final flight path list
+            droneMoveList.addAll(flightPaths);
             // rebuild the write_flight_path
-            for (int j = 0;j<flightPaths.size()-1;j++){
-                ToWriteFlight f = new ToWriteFlight(i.getOrderNo(),
-                        flightPaths.get(j).fromLongitude(),
-                        flightPaths.get(j).fromLatitude(),
-                        flightPaths.get(j+1).angle(),
-                        flightPaths.get(j+1).fromLongitude(),
-                        flightPaths.get(j+1).fromLatitude());
-                toWriteFlights.add(f);
-            }
+            List<ToWriteFlight> f = flightPaths.stream()
+                    .map(p -> new ToWriteFlight(
+                            i.getOrderNo(),
+                            p.fromLongitude(),
+                            p.fromLatitude(),
+                            p.angle(),
+                            p.toLongitude(),
+                            p.toLatitude()
+                    )).collect(Collectors.toList());
             //add all flight path of current order into final flight path list
-            flightList.addAll(flightPaths);
+            toWriteFlights.addAll(f);
         }
         writeFlightPath( toWriteFlights, date, validatedOrder );
-
-        return toWriteFlights;
+        new GeoJSONGenerator().generatorGeoJSON(droneMoveList,date);
     }
     public static void writeFlightPath(List<ToWriteFlight> flightList, LocalDate date,Map<Order, LngLat> validatedOrder ){
         //write file
@@ -97,31 +95,7 @@ public class GetFlightPath {
         // write deliver
         OrderProcess.writeDeliveries(validatedOrder.keySet(), date);
     }
-    public static void writeDronePath(List<FlightPath> flightList, LocalDate date,Map<Order, LngLat> validatedOrder ){
 
-        // Create an ObjectMapper instance
-        ObjectMapper objectMapper = new ObjectMapper();
-        // Disable pretty-printing
-        objectMapper.configure(SerializationFeature.INDENT_OUTPUT, false);
-
-        List<Double[]> coordinate = flightList.stream()
-                .map(ToWriteFlight -> new Double[]{ToWriteFlight.fromLongitude(), ToWriteFlight.fromLatitude()}
-                ).collect(Collectors.toList());
-
-        Geometry geometry = new Geometry(" LineString",coordinate);
-        // Create a GeoJSON Feature of type LineString
-        Feature feature = new Feature("FeatureCollection",geometry);
-
-        try {
-            String formattedDate = date.toString();
-            String fileName = "drone-" + formattedDate + ".geojson";
-            objectMapper.writeValue(new File("resultfiles/"+fileName), feature);
-            System.out.println("Drone saved to drone-date.json");
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-    }
     public static void main(String[] args) {
         if (args.length < 1){
             System.err.println("the base URL must be provided");
@@ -141,7 +115,37 @@ public class GetFlightPath {
             System.exit(2);
         }
 
-        List<ToWriteFlight> flightList=getFlightPath(baseUrl, date);
-        System.out.println(flightList.size());
+//        List<ToWriteFlight> flightList=
+        getFlightPath(baseUrl, date);
     }
 }
+
+//new a list which contain the final flight path list of all orders
+
+//        List<FlightPath> flightPaths = new Astar().aStarSearch(APPLETON,RESTAURANT,central,nonFlyZones);
+// rebuild the write_flight_path
+
+//        System.out.println(flightList.size());
+
+//        new GeoJSONGenerator().generatorGeoJSON(flightList,date);
+
+//            for (int j = 0;j<flightPaths.size()-1;j++){
+//    ToWriteFlight f = new ToWriteFlight(i.getOrderNo(),
+//                        flightPaths.get(j).fromLongitude(),
+//                        flightPaths.get(j).fromLatitude(),
+//                        flightPaths.get(j).angle(),
+//                        flightPaths.get(j).toLongitude(),
+//                        flightPaths.get(j).toLatitude());
+
+//        getCentralArea(baseUrl);
+//        getNonFlyZones(baseUrl);
+
+//        LngLat APPLETON =new LngLat(-3.186874, 55.944494);
+//        LngLat RESTAURANT = new LngLat(-3.202541470527649, 55.943284737579376);
+//        LngLat APPLETON =new LngLat(-3.1888, 55.94488);
+//        LngLat RESTAURANT = new LngLat(-3.1900, 55.94500);
+
+//Map<Order, LngLat> validatedOrder = new OrderProcess().getValidOrder(baseUrl,date);
+//        //call get nonFlyZone and central method
+//        NamedRegion[] nonFlyZones = getNonFlyZones(baseUrl);
+//        NamedRegion central = getCentralArea(baseUrl);

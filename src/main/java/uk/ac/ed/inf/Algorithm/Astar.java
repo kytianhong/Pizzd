@@ -1,35 +1,49 @@
 package uk.ac.ed.inf.Algorithm;
 
+import uk.ac.ed.inf.Interfaces.LngLatHandler;
 import uk.ac.ed.inf.ilp.constant.SystemConstants;
 import uk.ac.ed.inf.ilp.data.LngLat;
-import uk.ac.ed.inf.Interfaces.LngLatHandler;
 import uk.ac.ed.inf.ilp.data.NamedRegion;
 import uk.ac.ed.inf.restservice.data.FlightPath;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Astar {
     public static Map<LngLat, Double> neighbors(LngLat position, NamedRegion central, NamedRegion[] nonFlyZones) {
         Map<LngLat, Double> neighbors = new HashMap<>();
         double angleIncrement = 22.5;
-        for (double angle = 0; angle < 360; angle += angleIncrement) {
-
-            LngLat exposition = new LngLatHandler().nextPosition(position, angle);
-            boolean isCentral = new LngLatHandler().isInCentralArea(position,central);
-            if (isCentral){
-                for (NamedRegion r:nonFlyZones) {
-                    boolean isNextNonFly = new LngLatHandler().isInRegion(exposition,r);
-                    if(!isNextNonFly){
-                        neighbors.put(exposition,angle);
-                    }
+        double angle = 0;
+        boolean isCentral = new LngLatHandler().isInCentralArea(position,central);
+        if (isCentral){
+            while ( angle < 360) {
+                LngLat exposition = new LngLatHandler().nextPosition(position, angle);
+                if (!isNonFly(exposition,nonFlyZones)){neighbors.put(exposition, angle);}
+                angle += angleIncrement;
                 }
-            }else neighbors.put(exposition,angle);
         }
+        else{
+            while ( angle < 360) {
+                LngLat exposition = new LngLatHandler().nextPosition(position, angle);
+                neighbors.put(exposition, angle);
+                angle += angleIncrement;
+            }
+        }
+//        System.out.println(neighbors.size());
         return neighbors;
     }
-//    public static boolean isNeighborsNonFly(LngLat position, NamedRegion central,NamedRegion[] nonFlyZones) {
-//
-//    }
+    public static boolean isNonFly(LngLat exposition, NamedRegion[]nonFlyZones){
+        List<Boolean>isInNonFlyRegion = new ArrayList<>();
+        for (NamedRegion r:nonFlyZones) {
+            boolean isNextNonFly = new LngLatHandler().isInRegion(exposition,r);
+            isInNonFlyRegion.add(isNextNonFly);
+        }
+        if(isInNonFlyRegion.contains(Boolean.TRUE)){//if exposition in one or more fly region
+            return true;
+        }else {
+            return false;
+        }
+    }
     public static double heuristic(LngLat a, LngLat b) {
         double x1 = a.lng();
         double y1 = a.lat();
@@ -37,29 +51,46 @@ public class Astar {
         double y2 = b.lat();
         return Math.abs(x1 - x2) + Math.abs(y1 - y2);
     }
+    public static double euclideanDistance(LngLat a, LngLat b) {
+        double x1 = a.lng();
+        double y1 = a.lat();
+        double x2 = b.lng();
+        double y2 = b.lat();
 
-    public static List<FlightPath> aStarSearch( LngLat start, LngLat destination,NamedRegion central,NamedRegion[] nonFlyZones) {
+        double deltaX = x2 - x1;
+        double deltaY = y2 - y1;
+
+        return Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+    }
+    public static List<FlightPath> aStarSearch(LngLat start, LngLat destination, NamedRegion central, NamedRegion[] nonFlyZones) {
         Map<LngLat, Double> costSoFar = new HashMap<>();
-        Map<LngLat, Double> cameFrom = new HashMap<>();//(LngLat startPosition, double angle)
-        //build new flightpath object
-        List<FlightPath>  flightPaths = new ArrayList<>();
-        //set start point
-        costSoFar.put(start, 0.0);
-        cameFrom.put(start, 999.0);//(current position, angle)
+//        List<Node> cameFrom = new ArrayList<>();
+        Map<LngLat, LngLat> cameFrom = new HashMap<>();//(LngLat nextPosition, LngLat parent)
+        Map<LngLat, Double> Angle =new HashMap<>();// current position, angle
+
+        costSoFar.put(start, 0.0);//set start point
+//        cameFrom.add(new Node(start));
+        cameFrom.put(start, start);//(current position,next position)
+        Angle.put(start,999.0);
         //build priority queue to get the best next position
         PriorityQueue<LngLat> frontier = new PriorityQueue<>((loc1, loc2) -> {
-            double priority1 = costSoFar.get(loc1) + heuristic(loc1, destination);
-            double priority2 = costSoFar.get(loc2) + heuristic(loc2, destination);
+//            double priority1 = costSoFar.get(loc1) + heuristic(loc1, destination);
+//            double priority2 = costSoFar.get(loc2) + heuristic(loc2, destination);
+            double priority1 = costSoFar.get(loc1) + euclideanDistance(loc1, destination);
+            double priority2 = costSoFar.get(loc2) + euclideanDistance(loc2, destination);
             return Double.compare(priority1, priority2);
         });
 
         frontier.add(start);
-
+        //build new flightpath object
         while (!frontier.isEmpty()) {
             LngLat current = frontier.poll();
-//            System.out.println(current);
-            if (new LngLatHandler().isCloseTo(current,destination)) {
-                break;
+
+            if (new LngLatHandler().isCloseTo(current, destination)) {
+//                System.out.println("camefrom size is "+ cameFrom.size());
+                List<FlightPath> flightPaths = getShortestPath(start,current,cameFrom,Angle);
+//                System.out.println("flightPath size is "+ flightPaths.size());
+                return flightPaths;
             }
             Map<LngLat, Double> neighbors=neighbors(current, central, nonFlyZones);
             for (LngLat next : neighbors.keySet()) {
@@ -68,42 +99,63 @@ public class Astar {
                     costSoFar.put(next, newCost);
                     frontier.add(next);
                     double angle =  neighbors.get(next);
-                    cameFrom.put(next,angle);
-//                    FlightPath f = new FlightPath(current.lng(),current.lat(),angle,next.lng(),next.lat());
-//                    flightPaths.add(f);
-//                    System.out.println(f);
-                    //add new flight path
+                    Angle.put(current,angle);
+                    cameFrom.put(next,current);
                 }
             }
-            FlightPath f = new FlightPath(current.lng(),current.lat(),cameFrom.get(current));
-            flightPaths.add(f);
-            System.out.println(f);
         }
-//        System.out.println(cameFrom);
-//        System.out.println(cameFrom.size());
+       return null;
+    }
+    public static List<FlightPath> getShortestPath(LngLat start,LngLat destination, Map<LngLat, LngLat> cameFrom ,Map<LngLat, Double> Angle){
+        LngLat currentPathTile = destination;
+        List<LngLat> path = new ArrayList<>();
+        while (!new LngLatHandler().isCloseTo(currentPathTile, start)){
+            path.add(currentPathTile);
+            currentPathTile = cameFrom.get(currentPathTile);
+//            System.out.println("camefrom size is "+ cameFrom.size());
+            // Check for null to avoid potential NullPointerException
+            if (currentPathTile == null) {
+                // Handle the case where there's no valid path
+                System.out.println("currentPathTile is null");
+                return Collections.emptyList();
+            }else {
+                System.out.println("currentPathTile is "+ currentPathTile);
+            }
+        }
+        System.out.println("path size is "+ path.size());
+//        List<FlightPath>  flightPaths = cameFrom.keySet().stream()
+        List<FlightPath>  flightPaths = path.stream()
+                .map(p -> new FlightPath(
+                        p.lng(),
+                        p.lat(),
+                        Angle.get(p),
+                        cameFrom.get(p).lng(),
+                        cameFrom.get(p).lat()
+                )).collect(Collectors.toList());// Collect results into List<Deliveries>
         return flightPaths;
     }
-
-    public static void main(String[] args) {
-        // test A* search algorithm here
-        LngLat APPLETON =new LngLat(-3.186874, 55.944494);
-        LngLat RESTAURANT = new LngLat(-3.1912869215011597, 55.945535152517735);
-        NamedRegion CentralArea= new NamedRegion("central",
-                                new LngLat[]{new LngLat(-3.192473, 55.946233),
-                                             new LngLat(-3.192473,55.942617),
-                                             new LngLat(-3.184319,55.942617),
-                                             new LngLat(-3.184319,55.946233)});
-
-        NamedRegion[] NonFlightZone = new NamedRegion[]{
-                                new NamedRegion("George Square Area",
-                                new LngLat[]{new LngLat(-3.190578818321228,55.94402412577528),
-                                        new LngLat(-3.1899887323379517,55.94284650540911),
-                                        new LngLat(-3.187097311019897,55.94328811724263),
-                                        new LngLat(-3.187682032585144,55.944477740393744),
-                                        new LngLat(-3.190578818321228,55.94402412577528)})
-                                };
-
-        List<FlightPath> flightPaths  = aStarSearch(RESTAURANT,APPLETON,CentralArea,NonFlightZone);
-        System.out.println(flightPaths.size());
-    }
+//    public static void main(String[] args) {
+////        // test A* search algorithm here
+//        LngLat APPLETON =new LngLat(-3.186874, 55.944494);
+////        LngLat RESTAURANT = new LngLat(-3.1912869215011597, 55.945535152517735);//rest 1
+//        LngLat RESTAURANT = new LngLat(-3.202541470527649, 55.943284737579376);//rest 2
+////        LngLat RESTAURANT = new LngLat(-3.1920251175592607,55.943292317760935);//rest 3
+//        NamedRegion CentralArea= new NamedRegion("central",
+//                                new LngLat[]{new LngLat(-3.192473, 55.946233),
+//                                             new LngLat(-3.192473,55.942617),
+//                                             new LngLat(-3.184319,55.942617),
+//                                             new LngLat(-3.184319,55.946233)});
+//
+//        NamedRegion[] NonFlightZone = new NamedRegion[]{
+//                                new NamedRegion("George Square Area",
+//                                new LngLat[]{new LngLat(-3.190578818321228,55.94402412577528),
+//                                        new LngLat(-3.1899887323379517,55.94284650540911),
+//                                        new LngLat(-3.187097311019897,55.94328811724263),
+//                                        new LngLat(-3.187682032585144,55.944477740393744),
+//                                        new LngLat(-3.190578818321228,55.94402412577528)})
+//                                };
+//
+//        List<FlightPath> flightPaths = aStarSearch(APPLETON,RESTAURANT,CentralArea,NonFlightZone);
+////        new GeoJSONGenerator().generatorGeoJSON(flightPaths,);
+//    }
 }

@@ -33,9 +33,6 @@ public class LngLatHandler implements LngLatHandling {
      * @return if the positions are close
      */
     public boolean isCloseTo(LngLat startPosition, LngLat otherPosition){
-        if(startPosition == null  || otherPosition == null){
-             return true;
-        }
         double distance = distanceTo(startPosition,otherPosition);
         return distance < SystemConstants.DRONE_IS_CLOSE_DISTANCE;
     }

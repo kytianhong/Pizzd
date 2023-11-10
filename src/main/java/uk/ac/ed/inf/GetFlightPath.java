@@ -61,11 +61,22 @@ public class GetFlightPath {
             // get the corresponding destination
             LngLat destination = validatedOrder.get(i);
             //get the flight path of order i
-            List<FlightPath> flightPaths = new Astar().aStarSearch(APPLETON,destination,central,nonFlyZones);
+            List<FlightPath> AppleToRest = new Astar().aStarSearch(APPLETON,destination,central,nonFlyZones);
+            List<FlightPath> RestToApple = new Astar().aStarSearch(destination,APPLETON,central,nonFlyZones);
             //add all drone move path of current order into final flight path list
-            droneMoveList.addAll(flightPaths);
+            droneMoveList.addAll(AppleToRest);
+            droneMoveList.addAll(RestToApple);
             // rebuild the write_flight_path
-            List<ToWriteFlight> f = flightPaths.stream()
+            List<ToWriteFlight> aTr = AppleToRest.stream()
+                    .map(p -> new ToWriteFlight(
+                            i.getOrderNo(),
+                            p.fromLongitude(),
+                            p.fromLatitude(),
+                            p.angle(),
+                            p.toLongitude(),
+                            p.toLatitude()
+                    )).collect(Collectors.toList());
+            List<ToWriteFlight> rTa = RestToApple.stream()
                     .map(p -> new ToWriteFlight(
                             i.getOrderNo(),
                             p.fromLongitude(),
@@ -75,7 +86,8 @@ public class GetFlightPath {
                             p.toLatitude()
                     )).collect(Collectors.toList());
             //add all flight path of current order into final flight path list
-            toWriteFlights.addAll(f);
+            toWriteFlights.addAll(aTr);
+            toWriteFlights.addAll(rTa);
         }
         writeFlightPath( toWriteFlights, date, validatedOrder );
         new GeoJSONGenerator().generatorGeoJSON(droneMoveList,date);

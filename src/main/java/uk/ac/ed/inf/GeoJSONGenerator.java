@@ -42,11 +42,11 @@ public class GeoJSONGenerator {
 
         try {
             String formattedDate = date.toString();
-            String fileName = "drone-" + formattedDate + ".json";
+            String fileName = "drone-" + formattedDate + ".geojson";
             ObjectMapper mapper = new ObjectMapper();
             mapper.configure(SerializationFeature.INDENT_OUTPUT, true);
             // Serialize the GeoJSON feature to a file
-            mapper.writeValue(new File("resultfiles/.geojson"), featureCollection);
+            mapper.writeValue(new File("resultfiles/"+fileName), featureCollection);
         } catch (IOException e) {
             e.printStackTrace();
         }

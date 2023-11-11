@@ -109,20 +109,23 @@ public class Astar {
     public static List<FlightPath> getShortestPath(LngLat start,LngLat destination, Map<LngLat, LngLat> cameFrom ,Map<LngLat, Double> Angle){
         LngLat currentPathTile = destination;
         List<LngLat> path = new ArrayList<>();
-        while (!new LngLatHandler().isCloseTo(currentPathTile, start)){
+        while (currentPathTile!=start){
             path.add(currentPathTile);
             currentPathTile = cameFrom.get(currentPathTile);
 //            System.out.println("camefrom size is "+ cameFrom.size());
             // Check for null to avoid potential NullPointerException
             if (currentPathTile == null) {
                 // Handle the case where there's no valid path
-                System.out.println("currentPathTile is null");
+//                System.out.println("currentPathTile is null");
                 return Collections.emptyList();
             }else {
-                System.out.println("currentPathTile is "+ currentPathTile);
+//                System.out.println("currentPathTile is "+ currentPathTile);
             }
         }
-        System.out.println("path size is "+ path.size());
+        path.add(start);// add start position
+//        System.out.println(start);
+        Collections.reverse(path);
+//        System.out.println("path size is "+ path.size());
 //        List<FlightPath>  flightPaths = cameFrom.keySet().stream()
         List<FlightPath>  flightPaths = path.stream()
                 .map(p -> new FlightPath(
@@ -137,15 +140,15 @@ public class Astar {
 //    public static void main(String[] args) {
 ////        // test A* search algorithm here
 //        LngLat APPLETON =new LngLat(-3.186874, 55.944494);
-////        LngLat RESTAURANT = new LngLat(-3.1912869215011597, 55.945535152517735);//rest 1
-//        LngLat RESTAURANT = new LngLat(-3.202541470527649, 55.943284737579376);//rest 2
-////        LngLat RESTAURANT = new LngLat(-3.1920251175592607,55.943292317760935);//rest 3
+//////        LngLat RESTAURANT = new LngLat(-3.1912869215011597, 55.945535152517735);//rest 1
+//        LngLat RESTAURANT1 = new LngLat(-3.202541470527649, 55.943284737579376);//rest 2
+//        LngLat RESTAURANT2 = new LngLat(-3.1920251175592607,55.943292317760935);//rest 3
 //        NamedRegion CentralArea= new NamedRegion("central",
 //                                new LngLat[]{new LngLat(-3.192473, 55.946233),
 //                                             new LngLat(-3.192473,55.942617),
 //                                             new LngLat(-3.184319,55.942617),
 //                                             new LngLat(-3.184319,55.946233)});
-//
+////
 //        NamedRegion[] NonFlightZone = new NamedRegion[]{
 //                                new NamedRegion("George Square Area",
 //                                new LngLat[]{new LngLat(-3.190578818321228,55.94402412577528),
@@ -154,8 +157,17 @@ public class Astar {
 //                                        new LngLat(-3.187682032585144,55.944477740393744),
 //                                        new LngLat(-3.190578818321228,55.94402412577528)})
 //                                };
-//
-//        List<FlightPath> flightPaths = aStarSearch(APPLETON,RESTAURANT,CentralArea,NonFlightZone);
-////        new GeoJSONGenerator().generatorGeoJSON(flightPaths,);
+////
+//    List<FlightPath> AppleToRest1 = new Astar().aStarSearch(APPLETON,RESTAURANT1,CentralArea,NonFlightZone);
+//    List<FlightPath> RestToApple1 = new Astar().aStarSearch(RESTAURANT1,APPLETON,CentralArea,NonFlightZone);
+//        List<FlightPath> AppleToRest2 = new Astar().aStarSearch(APPLETON,RESTAURANT2,CentralArea,NonFlightZone);
+//        List<FlightPath> RestToApple2 = new Astar().aStarSearch(RESTAURANT2,APPLETON,CentralArea,NonFlightZone);
+//        LocalDate date = LocalDate.of(2022, 1, 27);
+//        List<FlightPath> droneMoveList=new ArrayList<>();
+//        droneMoveList.addAll(AppleToRest1);
+//        droneMoveList.addAll(RestToApple1);
+//        droneMoveList.addAll(AppleToRest2);
+//        droneMoveList.addAll(RestToApple2);
+//        new GeoJSONGenerator().generatorGeoJSON(droneMoveList,date);
 //    }
 }

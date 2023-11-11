@@ -28,7 +28,7 @@ public class GetFlightPath {
         try {
             NamedRegion[] nonFlyZones = mapper.readValue(new URL(baseUrl + NO_FLY_ZONE_URL), NamedRegion[].class);
             System.out.println("read all NO FLY ZONE");
-            System.out.println(nonFlyZones[0].vertices()[2]);
+            System.out.println(nonFlyZones.length);
             return nonFlyZones;
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -41,7 +41,7 @@ public class GetFlightPath {
         try {
             NamedRegion central = mapper.readValue(new URL(baseUrl + CENTRAL_AREA_URL), NamedRegion.class);
             System.out.println("read all central area");
-            System.out.println(central.vertices()[1]);
+            System.out.println(central.name());
             return central;
         } catch (IOException e) {
             throw new RuntimeException(e);

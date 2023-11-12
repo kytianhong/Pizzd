@@ -7,7 +7,6 @@ import uk.ac.ed.inf.ilp.data.NamedRegion;
 import uk.ac.ed.inf.restservice.data.FlightPath;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class Astar {
     public static Map<LngLat, Double> neighbors(LngLat position, NamedRegion central, NamedRegion[] nonFlyZones) {
@@ -99,7 +98,7 @@ public class Astar {
                     costSoFar.put(next, newCost);
                     frontier.add(next);
                     double angle =  neighbors.get(next);
-                    Angle.put(current,angle);
+                    Angle.put(next,angle);
                     cameFrom.put(next,current);
                 }
             }
@@ -127,14 +126,25 @@ public class Astar {
         Collections.reverse(path);
 //        System.out.println("path size is "+ path.size());
 //        List<FlightPath>  flightPaths = cameFrom.keySet().stream()
-        List<FlightPath>  flightPaths = path.stream()
-                .map(p -> new FlightPath(
-                        p.lng(),
-                        p.lat(),
-                        Angle.get(p),
-                        cameFrom.get(p).lng(),
-                        cameFrom.get(p).lat()
-                )).collect(Collectors.toList());// Collect results into List<Deliveries>
+        List<FlightPath>  flightPaths = new ArrayList<>();
+        for (int i = 0; i+1 < path.size(); i++) {
+            FlightPath f = new FlightPath(
+                    path.get(i).lng(),
+                    path.get(i).lat(),
+                    Angle.get(path.get(i+1)),
+                    path.get(i+1).lng(),
+                    path.get(i+1).lat()
+            );
+            flightPaths.add(f);
+        }
+//        List<FlightPath>  flightPaths = path.stream()
+//                .map(p -> new FlightPath(
+//                        p.lng(),
+//                        p.lat(),
+//                        Angle.get(p),
+//                        cameFrom.get(p).lng(),
+//                        cameFrom.get(p).lat()
+//                )).collect(Collectors.toList());// Collect results into List<Deliveries>
         return flightPaths;
     }
 //    public static void main(String[] args) {

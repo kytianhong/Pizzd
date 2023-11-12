@@ -9,7 +9,7 @@ import uk.ac.ed.inf.restservice.data.FlightPath;
 import java.util.*;
 
 public class Astar {
-    public static Map<LngLat, Double> neighbors(LngLat position, NamedRegion central, NamedRegion[] nonFlyZones) {
+    public Map<LngLat, Double> neighbors(LngLat position, NamedRegion central, NamedRegion[] nonFlyZones) {
         Map<LngLat, Double> neighbors = new HashMap<>();
         double angleIncrement = 22.5;
         double angle = 0;
@@ -17,7 +17,7 @@ public class Astar {
         if (isCentral){
             while ( angle < 360) {
                 LngLat exposition = new LngLatHandler().nextPosition(position, angle);
-                if (!isNonFly(exposition,nonFlyZones)){neighbors.put(exposition, angle);}
+                if (!(new Astar().isNonFly(exposition,nonFlyZones))){neighbors.put(exposition, angle);}
                 angle += angleIncrement;
                 }
         }
@@ -31,7 +31,7 @@ public class Astar {
 //        System.out.println(neighbors.size());
         return neighbors;
     }
-    public static boolean isNonFly(LngLat exposition, NamedRegion[]nonFlyZones){
+    public boolean isNonFly(LngLat exposition, NamedRegion[]nonFlyZones){
         List<Boolean>isInNonFlyRegion = new ArrayList<>();
         for (NamedRegion r:nonFlyZones) {
             boolean isNextNonFly = new LngLatHandler().isInRegion(exposition,r);
@@ -43,14 +43,14 @@ public class Astar {
             return false;
         }
     }
-    public static double heuristic(LngLat a, LngLat b) {
+    public double heuristic(LngLat a, LngLat b) {
         double x1 = a.lng();
         double y1 = a.lat();
         double x2 = b.lng();
         double y2 = b.lat();
         return Math.abs(x1 - x2) + Math.abs(y1 - y2);
     }
-    public static double euclideanDistance(LngLat a, LngLat b) {
+    public double euclideanDistance(LngLat a, LngLat b) {
         double x1 = a.lng();
         double y1 = a.lat();
         double x2 = b.lng();
@@ -61,7 +61,7 @@ public class Astar {
 
         return Math.sqrt(deltaX * deltaX + deltaY * deltaY);
     }
-    public static List<FlightPath> aStarSearch(LngLat start, LngLat destination, NamedRegion central, NamedRegion[] nonFlyZones) {
+    public List<FlightPath> aStarSearch(LngLat start, LngLat destination, NamedRegion central, NamedRegion[] nonFlyZones) {
         Map<LngLat, Double> costSoFar = new HashMap<>();
 //        List<Node> cameFrom = new ArrayList<>();
         Map<LngLat, LngLat> cameFrom = new HashMap<>();//(LngLat nextPosition, LngLat parent)
@@ -75,8 +75,8 @@ public class Astar {
         PriorityQueue<LngLat> frontier = new PriorityQueue<>((loc1, loc2) -> {
 //            double priority1 = costSoFar.get(loc1) + heuristic(loc1, destination);
 //            double priority2 = costSoFar.get(loc2) + heuristic(loc2, destination);
-            double priority1 = costSoFar.get(loc1) + euclideanDistance(loc1, destination);
-            double priority2 = costSoFar.get(loc2) + euclideanDistance(loc2, destination);
+            double priority1 = costSoFar.get(loc1) + new Astar().euclideanDistance(loc1, destination);
+            double priority2 = costSoFar.get(loc2) + new Astar().euclideanDistance(loc2, destination);
             return Double.compare(priority1, priority2);
         });
 
@@ -87,11 +87,10 @@ public class Astar {
 
             if (new LngLatHandler().isCloseTo(current, destination)) {
 //                System.out.println("camefrom size is "+ cameFrom.size());
-                List<FlightPath> flightPaths = getShortestPath(start,current,cameFrom,Angle);
-//                System.out.println("flightPath size is "+ flightPaths.size());
-                return flightPaths;
+                //                System.out.println("flightPath size is "+ flightPaths.size());
+                return new Astar().getShortestPath(start,current,cameFrom,Angle);
             }
-            Map<LngLat, Double> neighbors=neighbors(current, central, nonFlyZones);
+            Map<LngLat, Double> neighbors = new Astar().neighbors(current, central, nonFlyZones);
             for (LngLat next : neighbors.keySet()) {
                 double newCost = costSoFar.get(current) + SystemConstants.DRONE_MOVE_DISTANCE;
                 if (!costSoFar.containsKey(next) || newCost < costSoFar.get(next)) {
@@ -105,7 +104,7 @@ public class Astar {
         }
        return null;
     }
-    public static List<FlightPath> getShortestPath(LngLat start,LngLat destination, Map<LngLat, LngLat> cameFrom ,Map<LngLat, Double> Angle){
+    public List<FlightPath> getShortestPath(LngLat start,LngLat destination, Map<LngLat, LngLat> cameFrom ,Map<LngLat, Double> Angle){
         LngLat currentPathTile = destination;
         List<LngLat> path = new ArrayList<>();
         while (currentPathTile!=start){

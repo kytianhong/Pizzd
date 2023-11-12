@@ -22,7 +22,7 @@ public class GetFlightPath {
     private static final LngLat APPLETON =new LngLat(-3.186874, 55.944494);
     private static final String NO_FLY_ZONE_URL = "noFlyZones";
     private static final String CENTRAL_AREA_URL = "centralArea";
-    public static NamedRegion[] getNonFlyZones(String baseUrl){
+    public NamedRegion[] getNonFlyZones(String baseUrl){
         ObjectMapper mapper = new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
         try {
@@ -35,7 +35,7 @@ public class GetFlightPath {
         }
 
     }
-    public static NamedRegion getCentralArea(String baseUrl){
+    public NamedRegion getCentralArea(String baseUrl){
         ObjectMapper mapper = new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
         try {
@@ -48,12 +48,12 @@ public class GetFlightPath {
         }
     }
 //List<ToWriteFlight>
-    public static  void getFlightPath(String baseUrl, LocalDate date){
+    public void getFlightPath(String baseUrl, LocalDate date){
         // call order process to get the day's order and its corresponding destination
         Map<Order, LngLat> validatedOrder = new OrderProcess().getValidOrder(baseUrl,date);
         //call get nonFlyZone and central method
-        NamedRegion[] nonFlyZones = getNonFlyZones(baseUrl);
-        NamedRegion central = getCentralArea(baseUrl);
+        NamedRegion[] nonFlyZones = new GetFlightPath().getNonFlyZones(baseUrl);
+        NamedRegion central = new GetFlightPath().getCentralArea(baseUrl);
         //new a list which contain the final flight path list of all orders
         List<FlightPath> droneMoveList=new ArrayList<>();
         List<ToWriteFlight> toWriteFlights = new ArrayList<>();
@@ -89,10 +89,10 @@ public class GetFlightPath {
             toWriteFlights.addAll(aTr);
             toWriteFlights.addAll(rTa);
         }
-        writeFlightPath( toWriteFlights, date, validatedOrder );
+        new GetFlightPath().writeFlightPath( toWriteFlights, date, validatedOrder );
         new GeoJSONGenerator().generatorGeoJSON(droneMoveList,date);
     }
-    public static void writeFlightPath(List<ToWriteFlight> flightList, LocalDate date,Map<Order, LngLat> validatedOrder ){
+    public void writeFlightPath(List<ToWriteFlight> flightList, LocalDate date,Map<Order, LngLat> validatedOrder ){
         //write file
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
@@ -105,7 +105,7 @@ public class GetFlightPath {
             throw new RuntimeException(e);
         }
         // write deliver
-        OrderProcess.writeDeliveries(validatedOrder.keySet(), date);
+        new OrderProcess().writeDeliveries(validatedOrder.keySet(), date);
     }
 
     public static void main(String[] args) {
@@ -128,7 +128,7 @@ public class GetFlightPath {
         }
 
 //        List<ToWriteFlight> flightList=
-        getFlightPath(baseUrl, date);
+        new GetFlightPath().getFlightPath(baseUrl, date);
     }
 }
 

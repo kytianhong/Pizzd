@@ -6,6 +6,7 @@ import uk.ac.ed.inf.ilp.data.LngLat;
 import uk.ac.ed.inf.ilp.data.NamedRegion;
 import uk.ac.ed.inf.restservice.data.FlightPath;
 
+import java.awt.geom.Line2D;
 import java.util.*;
 
 public class Astar {
@@ -17,7 +18,7 @@ public class Astar {
         if (isCentral){
             while ( angle < 360) {
                 LngLat exposition = new LngLatHandler().nextPosition(position, angle);
-                if (!(new Astar().isNonFly(exposition,nonFlyZones))){neighbors.put(exposition, angle);}
+                if (!(new Astar().isNonFly(exposition,nonFlyZones,position))){neighbors.put(exposition, angle);}
                 angle += angleIncrement;
                 }
         }
@@ -31,10 +32,19 @@ public class Astar {
 //        System.out.println(neighbors.size());
         return neighbors;
     }
-    public boolean isNonFly(LngLat exposition, NamedRegion[]nonFlyZones){
+    public boolean isNonFly(LngLat exposition, NamedRegion[]nonFlyZones,LngLat position){
         List<Boolean>isInNonFlyRegion = new ArrayList<>();
         for (NamedRegion r:nonFlyZones) {
             boolean isNextNonFly = new LngLatHandler().isInRegion(exposition,r);
+            if(!isNextNonFly){
+//                boolean isIntersect = new Astar().intersects(r, exposition,position);
+//                if(isIntersect){
+//                    return true;
+//                }
+//                isInNonFlyRegion.add(isIntersect);
+            }else{
+                return true;
+            }
             isInNonFlyRegion.add(isNextNonFly);
         }
         if(isInNonFlyRegion.contains(Boolean.TRUE)){//if exposition in one or more fly region
@@ -42,6 +52,19 @@ public class Astar {
         }else {
             return false;
         }
+    }
+    public boolean intersects(NamedRegion region, LngLat exposition, LngLat position ) {
+        Line2D.Double line1 = new Line2D.Double(position.lng(), position.lat(), exposition.lng(), exposition.lat());
+
+        for (int i = 0; i < region.vertices().length - 1; i++) {
+            Line2D.Double line2 = new Line2D.Double(region.vertices()[i].lng(), region.vertices()[i].lat()
+                    , region.vertices()[i+1].lng(), region.vertices()[i+1].lng());
+            if(line1.intersectsLine(line2)){
+//                System.out.println("相交，返回true");
+                return true;//相交，返回true
+            }
+        }
+        return false;
     }
     public double heuristic(LngLat a, LngLat b) {
         double x1 = a.lng();

@@ -132,32 +132,4 @@ public class GetFlightPath {
     }
 }
 
-//new a list which contain the final flight path list of all orders
 
-//        List<FlightPath> flightPaths = new Astar().aStarSearch(APPLETON,RESTAURANT,central,nonFlyZones);
-// rebuild the write_flight_path
-
-//        System.out.println(flightList.size());
-
-//        new GeoJSONGenerator().generatorGeoJSON(flightList,date);
-
-//            for (int j = 0;j<flightPaths.size()-1;j++){
-//    ToWriteFlight f = new ToWriteFlight(i.getOrderNo(),
-//                        flightPaths.get(j).fromLongitude(),
-//                        flightPaths.get(j).fromLatitude(),
-//                        flightPaths.get(j).angle(),
-//                        flightPaths.get(j).toLongitude(),
-//                        flightPaths.get(j).toLatitude());
-
-//        getCentralArea(baseUrl);
-//        getNonFlyZones(baseUrl);
-
-//        LngLat APPLETON =new LngLat(-3.186874, 55.944494);
-//        LngLat RESTAURANT = new LngLat(-3.202541470527649, 55.943284737579376);
-//        LngLat APPLETON =new LngLat(-3.1888, 55.94488);
-//        LngLat RESTAURANT = new LngLat(-3.1900, 55.94500);
-
-//Map<Order, LngLat> validatedOrder = new OrderProcess().getValidOrder(baseUrl,date);
-//        //call get nonFlyZone and central method
-//        NamedRegion[] nonFlyZones = getNonFlyZones(baseUrl);
-//        NamedRegion central = getCentralArea(baseUrl);

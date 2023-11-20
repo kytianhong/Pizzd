@@ -10,22 +10,26 @@ import java.awt.geom.Line2D;
 import java.util.*;
 
 public class Astar {
-    public Map<LngLat, Double> neighbors(LngLat position, NamedRegion central, NamedRegion[] nonFlyZones) {
+    public Map<LngLat, Double> neighbors(LngLat position, LngLat destination, NamedRegion central, NamedRegion[] nonFlyZones) {
         Map<LngLat, Double> neighbors = new HashMap<>();
         double angleIncrement = 22.5;
         double angle = 0;
         boolean isCentral = new LngLatHandler().isInCentralArea(position,central);
-        if (isCentral){
+        boolean destInCentral = new LngLatHandler().isInCentralArea(destination,central);
+        if (isCentral && destInCentral){
             while ( angle < 360) {
                 LngLat exposition = new LngLatHandler().nextPosition(position, angle);
-                if (!(new Astar().isNonFly(exposition,nonFlyZones,position))){neighbors.put(exposition, angle);}
-                angle += angleIncrement;
+                boolean nextInCentral = new LngLatHandler().isInCentralArea(exposition,central);
+                if(nextInCentral){
+                    if (!(new Astar().isNonFly(exposition,nonFlyZones,position))){neighbors.put(exposition, angle);}
                 }
+                angle += angleIncrement;
+            }
         }
         else{
             while ( angle < 360) {
                 LngLat exposition = new LngLatHandler().nextPosition(position, angle);
-                neighbors.put(exposition, angle);
+                if (!(new Astar().isNonFly(exposition,nonFlyZones,position))){neighbors.put(exposition, angle);}
                 angle += angleIncrement;
             }
         }
@@ -108,7 +112,7 @@ public class Astar {
 //                System.out.println("camefrom size is "+ cameFrom.size());
                 return new Astar().getShortestPath(start,current,cameFrom,Angle);
             }
-            Map<LngLat, Double> neighbors = new Astar().neighbors(current, central, nonFlyZones);
+            Map<LngLat, Double> neighbors = new Astar().neighbors(current,destination, central, nonFlyZones);
             for (LngLat next : neighbors.keySet()) {
                 double newCost = costSoFar.get(current) + SystemConstants.DRONE_MOVE_DISTANCE;
                 if (!costSoFar.containsKey(next) || newCost < costSoFar.get(next)) {
@@ -141,7 +145,7 @@ public class Astar {
         path.add(start);// add start position
 //        System.out.println(start);
         Collections.reverse(path);
-//        System.out.println("path size is "+ path.size());
+        System.out.println("path size is "+ path.size());
 //        List<FlightPath>  flightPaths = cameFrom.keySet().stream()
         List<FlightPath>  flightPaths = new ArrayList<>();
         for (int i = 0; i+1 < path.size(); i++) {

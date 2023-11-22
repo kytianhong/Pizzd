@@ -16,7 +16,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public class GetFlightPath {
     private static final LngLat APPLETON =new LngLat(-3.186874, 55.944494);
@@ -75,7 +74,7 @@ public class GetFlightPath {
                             p.angle(),
                             p.toLongitude(),
                             p.toLatitude()
-                    )).collect(Collectors.toList());
+                    )).toList();
             List<ToWriteFlight> rTa = RestToApple.stream()
                     .map(p -> new ToWriteFlight(
                             i.getOrderNo(),
@@ -84,7 +83,7 @@ public class GetFlightPath {
                             p.angle(),
                             p.toLongitude(),
                             p.toLatitude()
-                    )).collect(Collectors.toList());
+                    )).toList();
             //add all flight path of current order into final flight path list
             toWriteFlights.addAll(aTr);
             toWriteFlights.addAll(rTa);
@@ -116,7 +115,7 @@ public class GetFlightPath {
 
         String baseUrl = args[1];
         LocalDate date = LocalDate.parse(args[0]);
-        if (baseUrl.endsWith("/") == false){
+        if (!baseUrl.endsWith("/")){
             baseUrl += "/";
         }
 

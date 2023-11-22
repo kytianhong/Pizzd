@@ -33,7 +33,6 @@ public class Astar {
                 angle += angleIncrement;
             }
         }
-//        System.out.println(neighbors.size());
         return neighbors;
     }
     public boolean isNonFly(LngLat exposition, NamedRegion[]nonFlyZones,LngLat position){
@@ -47,11 +46,8 @@ public class Astar {
             isInNonFlyRegion.add(isNextNonFly);
             isInNonFlyRegion.add(isIntersect);
         }
-        if(isInNonFlyRegion.contains(Boolean.TRUE)){//if exposition in one or more fly region
-            return true;
-        }else {
-             return false;
-        }
+        //if exposition in one or more fly region
+        return isInNonFlyRegion.contains(Boolean.TRUE);
     }
     public boolean intersects(NamedRegion region, LngLat exposition, LngLat position ) {
         Line2D.Double line1 = new Line2D.Double(position.lng(), position.lat(), exposition.lng(), exposition.lat());
@@ -86,18 +82,14 @@ public class Astar {
     }
     public List<FlightPath> aStarSearch(LngLat start, LngLat destination, NamedRegion central, NamedRegion[] nonFlyZones) {
         Map<LngLat, Double> costSoFar = new HashMap<>();
-//        List<Node> cameFrom = new ArrayList<>();
         Map<LngLat, LngLat> cameFrom = new HashMap<>();//(LngLat nextPosition, LngLat parent)
         Map<LngLat, Double> Angle =new HashMap<>();// current position, angle
 
         costSoFar.put(start, 0.0);//set start point
-//        cameFrom.add(new Node(start));
         cameFrom.put(start, start);//(current position,next position)
         Angle.put(start,999.0);
         //build priority queue to get the best next position
         PriorityQueue<LngLat> frontier = new PriorityQueue<>((loc1, loc2) -> {
-//            double priority1 = costSoFar.get(loc1) + heuristic(loc1, destination);
-//            double priority2 = costSoFar.get(loc2) + heuristic(loc2, destination);
             double priority1 = costSoFar.get(loc1) + new Astar().euclideanDistance(loc1, destination);
             double priority2 = costSoFar.get(loc2) + new Astar().euclideanDistance(loc2, destination);
             return Double.compare(priority1, priority2);
@@ -109,7 +101,6 @@ public class Astar {
             LngLat current = frontier.poll();
 
             if (new LngLatHandler().isCloseTo(current, destination)) {
-//                System.out.println("camefrom size is "+ cameFrom.size());
                 return new Astar().getShortestPath(start,current,cameFrom,Angle);
             }
             Map<LngLat, Double> neighbors = new Astar().neighbors(current,destination, central, nonFlyZones);
@@ -132,21 +123,15 @@ public class Astar {
         while (currentPathTile!=start){
             path.add(currentPathTile);
             currentPathTile = cameFrom.get(currentPathTile);
-//            System.out.println("camefrom size is "+ cameFrom.size());
             // Check for null to avoid potential NullPointerException
             if (currentPathTile == null) {
                 // Handle the case where there's no valid path
-//                System.out.println("currentPathTile is null");
                 return Collections.emptyList();
-            }else {
-//                System.out.println("currentPathTile is "+ currentPathTile);
             }
+
         }
         path.add(start);// add start position
-//        System.out.println(start);
         Collections.reverse(path);
-//        System.out.println("path size is "+ path.size());
-//        List<FlightPath>  flightPaths = cameFrom.keySet().stream()
         List<FlightPath>  flightPaths = new ArrayList<>();
         for (int i = 0; i+1 < path.size(); i++) {
             FlightPath f = new FlightPath(

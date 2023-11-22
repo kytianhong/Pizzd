@@ -1,4 +1,4 @@
-package uk.ac.ed.inf.GeoJson;
+package uk.ac.ed.inf.GeoJsonFeatures;
 
 import java.util.ArrayList;
 import java.util.List;

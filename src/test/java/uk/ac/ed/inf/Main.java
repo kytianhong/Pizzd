@@ -1,16 +1,13 @@
 package uk.ac.ed.inf;
 
-import uk.ac.ed.inf.ilp.data.LngLat;
-import uk.ac.ed.inf.ilp.data.NamedRegion;
-
-import java.awt.geom.Line2D;
+import uk.ac.ed.inf.ilp.constant.OrderStatus;
 
 public class Main {
     public static void main( String[] args )
     {
-//        System.out.println( "Small test for ILPDATAobject" );
-//        var orderStatus = OrderStatus.DELIVERED;
-//        System.out.println( "ILPDATAobject.jar was used" );
+        System.out.println( "Small test for ILPDATAobject" );
+        var orderStatus = OrderStatus.DELIVERED;
+        System.out.println( "ILPDATAobject.jar was used" );
 //
 //        NamedRegion[] NonFlightZone = new NamedRegion[]{
 //                                new NamedRegion("Dr Elsie Inglis Quadrangle",
@@ -78,18 +75,18 @@ public class Main {
 
 
     }
-    public static boolean intersects(NamedRegion region, LngLat exposition, LngLat position ) {
-        Line2D.Double line1 = new Line2D.Double(position.lng(), position.lat(), exposition.lng(), exposition.lat());
-
-        for (int i = 0; i < region.vertices().length-1; i++) {
-            Line2D.Double line2 = new Line2D.Double(region.vertices()[i].lng(), region.vertices()[i].lat()
-                    , region.vertices()[i+1].lng(), region.vertices()[i+1].lng());
-            if(line1.intersectsLine(line2)){
-                return false;//相交，返回false
-            }
-        }
-        return true;
-    }
+//    public static boolean intersects(NamedRegion region, LngLat exposition, LngLat position ) {
+//        Line2D.Double line1 = new Line2D.Double(position.lng(), position.lat(), exposition.lng(), exposition.lat());
+//
+//        for (int i = 0; i < region.vertices().length-1; i++) {
+//            Line2D.Double line2 = new Line2D.Double(region.vertices()[i].lng(), region.vertices()[i].lat()
+//                    , region.vertices()[i+1].lng(), region.vertices()[i+1].lng());
+//            if(line1.intersectsLine(line2)){
+//                return false;//相交，返回false
+//            }
+//        }
+//        return true;
+//    }
 }
 //    public static void main(String[] args) {
 ////        // test A* search algorithm here
@@ -163,3 +160,11 @@ public class Main {
 //        //call get nonFlyZone and central method
 //        NamedRegion[] nonFlyZones = getNonFlyZones(baseUrl);
 //        NamedRegion central = getCentralArea(baseUrl);
+
+//    public double heuristic(LngLat a, LngLat b) {
+//        double x1 = a.lng();
+//        double y1 = a.lat();
+//        double x2 = b.lng();
+//        double y2 = b.lat();
+//        return Math.abs(x1 - x2) + Math.abs(y1 - y2);
+//    }

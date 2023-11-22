@@ -2,10 +2,10 @@ package uk.ac.ed.inf;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import uk.ac.ed.inf.GeoJson.FeatureCollection;
-import uk.ac.ed.inf.GeoJson.GeoJSONFeature;
-import uk.ac.ed.inf.GeoJson.Geometry;
-import uk.ac.ed.inf.GeoJson.Property;
+import uk.ac.ed.inf.GeoJsonFeatures.FeatureCollection;
+import uk.ac.ed.inf.GeoJsonFeatures.GeoJSONFeature;
+import uk.ac.ed.inf.GeoJsonFeatures.Geometry;
+import uk.ac.ed.inf.GeoJsonFeatures.Property;
 import uk.ac.ed.inf.restservice.data.FlightPath;
 
 import java.io.File;
@@ -47,6 +47,7 @@ public class GeoJSONGenerator {
             mapper.configure(SerializationFeature.INDENT_OUTPUT, true);
             // Serialize the GeoJSON feature to a file
             mapper.writeValue(new File("resultfiles/"+fileName), featureCollection);
+            System.out.println("Drone routine saved to resultfiles/"+fileName);
         } catch (IOException e) {
             e.printStackTrace();
         }

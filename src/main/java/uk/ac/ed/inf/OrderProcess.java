@@ -3,6 +3,7 @@ package uk.ac.ed.inf;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import uk.ac.ed.inf.Interfaces.OrderValidator;
+import uk.ac.ed.inf.ilp.constant.OrderStatus;
 import uk.ac.ed.inf.ilp.constant.OrderValidationCode;
 import uk.ac.ed.inf.ilp.data.LngLat;
 import uk.ac.ed.inf.ilp.data.Order;
@@ -37,8 +38,9 @@ public class OrderProcess {
                 if (i.getOrderDate().equals(date)) {
                     Order tobeadd =  new OrderValidator().validateOrder(i,restaurants);
                     if (tobeadd.getOrderValidationCode().equals(OrderValidationCode.NO_ERROR)){
-                        Restaurant restaurant = getRestaurant(i.getPizzasInOrder(),restaurants);
                         //get destination
+                        Restaurant restaurant = getRestaurant(i.getPizzasInOrder(),restaurants);
+                        tobeadd.setOrderStatus(OrderStatus.DELIVERED);
                         extractedOrders.put(tobeadd,restaurant.location());
                     }
                 }
@@ -64,9 +66,6 @@ public class OrderProcess {
         }
         return bestRestaurant; // not legal
     }
-//    public List<OrderToDeliver> ordertoflightpath(List<Order> extractedOrders){
-//
-//    }
 
     public void writeDeliveries(Set<Order> validatedOrder, LocalDate date){
         // Use Java streams transform Order to Deliveries
@@ -85,7 +84,7 @@ public class OrderProcess {
             String formattedDate = date.toString();
             String fileName = "deliveries-" + formattedDate + ".json";
             objectMapper.writeValue(new File("resultfiles/"+fileName), deliveriesList);
-            System.out.println("Dated orders saved to datedOrders.json");
+            System.out.println("Dated orders saved to resultfiles/"+fileName);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

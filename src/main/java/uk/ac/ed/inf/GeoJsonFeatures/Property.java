@@ -1,4 +1,4 @@
-package uk.ac.ed.inf.GeoJson;
+package uk.ac.ed.inf.GeoJsonFeatures;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)

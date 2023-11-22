@@ -145,7 +145,7 @@ public class Astar {
         path.add(start);// add start position
 //        System.out.println(start);
         Collections.reverse(path);
-        System.out.println("path size is "+ path.size());
+//        System.out.println("path size is "+ path.size());
 //        List<FlightPath>  flightPaths = cameFrom.keySet().stream()
         List<FlightPath>  flightPaths = new ArrayList<>();
         for (int i = 0; i+1 < path.size(); i++) {

@@ -126,7 +126,6 @@ public class GetFlightPath {
             System.exit(2);
         }
 
-//        List<ToWriteFlight> flightList=
         new GetFlightPath().getFlightPath(baseUrl, date);
     }
 }

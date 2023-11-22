@@ -44,7 +44,6 @@ public class GetFlightPath {
             throw new RuntimeException(e);
         }
     }
-//List<ToWriteFlight>
     public void getFlightPath(String baseUrl, LocalDate date){
         // call order process to get the day's order and its corresponding destination
         Map<Order, LngLat> validatedOrder = new OrderProcess().getValidOrder(baseUrl,date);

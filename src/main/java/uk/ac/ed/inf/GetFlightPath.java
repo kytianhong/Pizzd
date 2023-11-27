@@ -44,12 +44,7 @@ public class GetFlightPath {
             throw new RuntimeException(e);
         }
     }
-    public void getFlightPath(String baseUrl, LocalDate date){
-        // call order process to get the day's order and its corresponding destination
-        Map<Order, LngLat> validatedOrder = new OrderProcess().getValidOrder(baseUrl,date);
-        //call get nonFlyZone and central method
-        NamedRegion[] nonFlyZones = new GetFlightPath().getNonFlyZones(baseUrl);
-        NamedRegion central = new GetFlightPath().getCentralArea(baseUrl);
+    public void getFlightPath(Map<Order, LngLat> validatedOrder,NamedRegion central,NamedRegion[] nonFlyZones,LocalDate date){
         //new a list which contain the final flight path list of all orders
         List<FlightPath> droneMoveList=new ArrayList<>();
         List<ToWriteFlight> toWriteFlights = new ArrayList<>();
@@ -63,30 +58,27 @@ public class GetFlightPath {
             droneMoveList.addAll(AppleToRest);
             droneMoveList.addAll(RestToApple);
             // rebuild the write_flight_path
-            List<ToWriteFlight> aTr = AppleToRest.stream()
-                    .map(p -> new ToWriteFlight(
-                            i.getOrderNo(),
-                            p.fromLongitude(),
-                            p.fromLatitude(),
-                            p.angle(),
-                            p.toLongitude(),
-                            p.toLatitude()
-                    )).toList();
-            List<ToWriteFlight> rTa = RestToApple.stream()
-                    .map(p -> new ToWriteFlight(
-                            i.getOrderNo(),
-                            p.fromLongitude(),
-                            p.fromLatitude(),
-                            p.angle(),
-                            p.toLongitude(),
-                            p.toLatitude()
-                    )).toList();
+            List<ToWriteFlight> aTr = restoreFlightPath(i.getOrderNo(),AppleToRest);
+            List<ToWriteFlight> rTa = restoreFlightPath(i.getOrderNo(),RestToApple);
             //add all flight path of current order into final flight path list
             toWriteFlights.addAll(aTr);
             toWriteFlights.addAll(rTa);
         }
         new GetFlightPath().writeFlightPath( toWriteFlights, date, validatedOrder );
         new GeoJSONGenerator().generatorGeoJSON(droneMoveList,date);
+    }
+    private List<ToWriteFlight> restoreFlightPath(String orderNo, List<FlightPath> flightPath){
+        // rebuild the write_flight_path
+        List<ToWriteFlight> f = flightPath.stream()
+                .map(p -> new ToWriteFlight(
+                        orderNo,
+                        p.fromLongitude(),
+                        p.fromLatitude(),
+                        p.angle(),
+                        p.toLongitude(),
+                        p.toLatitude()
+                )).toList();
+        return f;
     }
     public void writeFlightPath(List<ToWriteFlight> flightList, LocalDate date,Map<Order, LngLat> validatedOrder ){
         //write file
@@ -123,7 +115,13 @@ public class GetFlightPath {
             System.exit(2);
         }
 
-        new GetFlightPath().getFlightPath(baseUrl, date);
+        // call order process to get the day's order and its corresponding destination
+        Map<Order, LngLat> validatedOrder = new OrderProcess().getValidOrder(baseUrl,date);
+        //call get nonFlyZone and central method
+        NamedRegion[] nonFlyZones = new GetFlightPath().getNonFlyZones(baseUrl);
+        NamedRegion central = new GetFlightPath().getCentralArea(baseUrl);
+
+        new GetFlightPath().getFlightPath(validatedOrder,central,nonFlyZones,date);
     }
 }
 

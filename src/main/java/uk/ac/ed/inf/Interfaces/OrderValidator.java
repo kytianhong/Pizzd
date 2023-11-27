@@ -32,7 +32,7 @@ public class OrderValidator implements OrderValidation{
         String cvv = orderToValidate.getCreditCardInformation().getCvv();
         String exp_day = orderToValidate.getCreditCardInformation().getCreditCardExpiry();
         LocalDate orderDate = orderToValidate.getOrderDate();
-        LocalDate today = LocalDate.now();
+//        LocalDate today = LocalDate.now();
         int totalCost = orderToValidate.getPriceTotalInPence();
         Pizza[] pizzas = orderToValidate.getPizzasInOrder();
         orderToValidate.setOrderStatus(OrderStatus.INVALID);
@@ -41,7 +41,7 @@ public class OrderValidator implements OrderValidation{
             orderToValidate.setOrderValidationCode( OrderValidationCode.CARD_NUMBER_INVALID );
         } else if ( ! CardCvvLegal(cvv)) {//check CVV is 3 digital
             orderToValidate.setOrderValidationCode( OrderValidationCode.CVV_INVALID);
-        } else if ( ! CardDateLegal( exp_day, today ) ) { //check card expiration date legal
+        } else if ( ! CardDateLegal( exp_day, orderDate ) ) { //check card expiration date legal
             orderToValidate.setOrderValidationCode( OrderValidationCode.EXPIRY_DATE_INVALID);
         } else if ( ! pizzasUnDefined(pizzas,definedRestaurants)) { //if pizza out of range
             orderToValidate.setOrderValidationCode(OrderValidationCode.PIZZA_NOT_DEFINED);

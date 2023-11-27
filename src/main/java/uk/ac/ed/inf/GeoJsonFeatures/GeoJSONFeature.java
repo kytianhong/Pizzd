@@ -4,8 +4,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class GeoJSONFeature {
     private String type;
-    private Geometry geometry;
     private Property properties;
+    private Geometry geometry;
 
     // Constructors, getters, and setters
     public GeoJSONFeature() {

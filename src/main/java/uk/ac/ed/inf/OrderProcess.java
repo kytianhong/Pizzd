@@ -27,25 +27,24 @@ public class OrderProcess {
         mapper.registerModule(new JavaTimeModule());
         try {
             Order[] orders = mapper.readValue(new URL(baseUrl + ORDER_URL), Order[].class);
-            System.out.println("read all orders");
-            System.out.println(orders.length);
+            System.out.println("read all " + orders.length + " orders");
             Restaurant[] restaurants = mapper.readValue(new URL(baseUrl + RESTAURANT_URL), Restaurant[].class);
-            System.out.println("read all restaurants");
+            System.out.println("read all " + restaurants.length + " restaurants");
 
             //validate orders
             Map<Order,LngLat> extractedOrders = new HashMap<>();
             for (Order i : orders) {
                 if (i.getOrderDate().equals(date)) {
-                    Order tobeadd =  new OrderValidator().validateOrder(i,restaurants);
-                    if (tobeadd.getOrderValidationCode().equals(OrderValidationCode.NO_ERROR)){
+                    Order toBeAdd =  new OrderValidator().validateOrder(i,restaurants);
+                    if (toBeAdd.getOrderValidationCode().equals(OrderValidationCode.NO_ERROR)){
                         //get destination
                         Restaurant restaurant = getRestaurant(i.getPizzasInOrder(),restaurants);
-                        tobeadd.setOrderStatus(OrderStatus.DELIVERED);
-                        extractedOrders.put(tobeadd,restaurant.location());
+                        toBeAdd.setOrderStatus(OrderStatus.DELIVERED);
+                        extractedOrders.put(toBeAdd,restaurant.location());
                     }
                 }
             }
-            System.out.println(extractedOrders.size());
+            System.out.println("validated "+extractedOrders.size()+" orders in "+ date.toString());
             return extractedOrders;
 
         } catch (IOException e) {
@@ -75,8 +74,7 @@ public class OrderProcess {
                         order.getOrderStatus(),
                         order.getOrderValidationCode(),
                         order.getPriceTotalInPence()
-                ))
-                .collect(Collectors.toList());// Collect results into List<Deliveries>
+                )).collect(Collectors.toList());// Collect results into List<Deliveries>
         // Serialize the datedOrders list to a JSON file
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());

@@ -143,7 +143,8 @@ public class Astar {
             );
             flightPaths.add(f);
         }
-
+        FlightPath hover = new FlightPath(destination.lng(),destination.lat(),999.0,destination.lng(),destination.lat());
+        flightPaths.add(hover);
         return flightPaths;
     }
 }

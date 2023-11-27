@@ -61,14 +61,15 @@ public class Astar {
         }
         return false;
     }
-    public static double heuristic(LngLat a, LngLat b) {
-        double x1 = a.lng();
-        double y1 = a.lat();
-        double x2 = b.lng();
-        double y2 = b.lat();
-        return Math.abs(x1 - x2) + Math.abs(y1 - y2);
-    }
-    private double euclideanDistance(LngLat a, LngLat b) {
+    private static double heuristic(LngLat a, LngLat b) {
+        //Manhattan distance
+//        double x1 = a.lng();
+//        double y1 = a.lat();
+//        double x2 = b.lng();
+//        double y2 = b.lat();
+//        return Math.abs(x1 - x2) + Math.abs(y1 - y2);
+
+        //Euclidean Distance
         double x1 = a.lng();
         double y1 = a.lat();
         double x2 = b.lng();
@@ -79,6 +80,7 @@ public class Astar {
 
         return Math.sqrt(deltaX * deltaX + deltaY * deltaY);
     }
+
     public List<FlightPath> aStarSearch(LngLat start, LngLat destination, NamedRegion central, NamedRegion[] nonFlyZones) {
         Map<LngLat, Double> costSoFar = new HashMap<>();
         Map<LngLat, LngLat> cameFrom = new HashMap<>();//(LngLat nextPosition, LngLat parent)
@@ -91,8 +93,6 @@ public class Astar {
         PriorityQueue<LngLat> frontier = new PriorityQueue<>((loc1, loc2) -> {
             double priority1 = costSoFar.get(loc1) + heuristic(loc1, destination);
             double priority2 = costSoFar.get(loc2) + heuristic(loc2, destination);
-//            double priority1 = costSoFar.get(loc1) + euclideanDistance(loc1, destination);
-//            double priority2 = costSoFar.get(loc2) + euclideanDistance(loc2, destination);
             return Double.compare(priority1, priority2);
         });
 

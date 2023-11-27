@@ -89,10 +89,10 @@ public class Astar {
         Angle.put(start,999.0);
         //build priority queue to get the best next position
         PriorityQueue<LngLat> frontier = new PriorityQueue<>((loc1, loc2) -> {
-//            double priority1 = costSoFar.get(loc1) + heuristic(loc1, destination);
-//            double priority2 = costSoFar.get(loc2) + heuristic(loc2, destination);
-            double priority1 = costSoFar.get(loc1) + euclideanDistance(loc1, destination);
-            double priority2 = costSoFar.get(loc2) + euclideanDistance(loc2, destination);
+            double priority1 = costSoFar.get(loc1) + heuristic(loc1, destination);
+            double priority2 = costSoFar.get(loc2) + heuristic(loc2, destination);
+//            double priority1 = costSoFar.get(loc1) + euclideanDistance(loc1, destination);
+//            double priority2 = costSoFar.get(loc2) + euclideanDistance(loc2, destination);
             return Double.compare(priority1, priority2);
         });
 

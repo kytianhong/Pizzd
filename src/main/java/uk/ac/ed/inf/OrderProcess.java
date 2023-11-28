@@ -26,15 +26,21 @@ public class OrderProcess {
         ObjectMapper mapper = new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
         try {
-            Order[] orders = mapper.readValue(new URL(baseUrl + ORDER_URL), Order[].class);
+//            Order[] orders = mapper.readValue(new URL(baseUrl + ORDER_URL), Order[].class);
+            Order[] orders = mapper.readValue(new URL(baseUrl + ORDER_URL + "/" + date.toString()), Order[].class);
             System.out.println("read all " + orders.length + " orders");
             Restaurant[] restaurants = mapper.readValue(new URL(baseUrl + RESTAURANT_URL), Restaurant[].class);
             System.out.println("read all " + restaurants.length + " restaurants");
 
+            //check whether there is at least one valid order
+            if (orders.length<1){
+                System.err.println("The date is invalid, no order in this day");
+                System.exit(1);
+            }
             //validate orders
             Map<Order,LngLat> extractedOrders = new HashMap<>();
             for (Order i : orders) {
-                if (i.getOrderDate().equals(date)) {
+//                if (i.getOrderDate().equals(date)) {
                     Order toBeAdd =  new OrderValidator().validateOrder(i,restaurants);
                     if (toBeAdd.getOrderValidationCode().equals(OrderValidationCode.NO_ERROR)){
                         //get destination
@@ -42,8 +48,9 @@ public class OrderProcess {
                         toBeAdd.setOrderStatus(OrderStatus.DELIVERED);
                         extractedOrders.put(toBeAdd,restaurant.location());
                     }
-                }
+//                }
             }
+
             System.out.println("validated "+extractedOrders.size()+" orders in "+ date.toString());
             return extractedOrders;
 

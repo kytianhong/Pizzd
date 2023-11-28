@@ -10,7 +10,7 @@ import java.awt.geom.Line2D;
 import java.util.*;
 
 public class Astar {
-    public Map<LngLat, Double> neighbors(LngLat position, LngLat destination, NamedRegion central, NamedRegion[] nonFlyZones) {
+    private Map<LngLat, Double> neighbors(LngLat position, LngLat destination, NamedRegion central, NamedRegion[] nonFlyZones) {
         Map<LngLat, Double> neighbors = new HashMap<>();
         double angleIncrement = 22.5;
         double angle = 0;
@@ -21,7 +21,7 @@ public class Astar {
                 LngLat exposition = new LngLatHandler().nextPosition(position, angle);
                 boolean nextInCentral = new LngLatHandler().isInCentralArea(exposition,central);
                 if(nextInCentral){
-                    if (!(new Astar().isNonFly(exposition,nonFlyZones,position))){neighbors.put(exposition, angle);}
+                    if (!(isNonFly(exposition,nonFlyZones,position))){neighbors.put(exposition, angle);}
                 }
                 angle += angleIncrement;
             }
@@ -29,27 +29,26 @@ public class Astar {
         else{
             while ( angle < 360) {
                 LngLat exposition = new LngLatHandler().nextPosition(position, angle);
-                if (!(new Astar().isNonFly(exposition,nonFlyZones,position))){neighbors.put(exposition, angle);}
+                if (!(isNonFly(exposition,nonFlyZones,position))){neighbors.put(exposition, angle);}
                 angle += angleIncrement;
             }
         }
         return neighbors;
     }
-    public boolean isNonFly(LngLat exposition, NamedRegion[]nonFlyZones,LngLat position){
+    private boolean isNonFly(LngLat exposition, NamedRegion[]nonFlyZones,LngLat position){
         List<Boolean>isInNonFlyRegion = new ArrayList<>();
         for (NamedRegion r:nonFlyZones) {
             boolean isNextNonFly = new LngLatHandler().isInRegion(exposition,r);
-            boolean isIntersect = new Astar().intersects(r, exposition,position);
+            boolean isIntersect = intersects(r, exposition,position);
             if(isNextNonFly){
                 return true;
             }
-            isInNonFlyRegion.add(isNextNonFly);
             isInNonFlyRegion.add(isIntersect);
         }
         //if exposition in one or more fly region
         return isInNonFlyRegion.contains(Boolean.TRUE);
     }
-    public boolean intersects(NamedRegion region, LngLat exposition, LngLat position ) {
+    private boolean intersects(NamedRegion region, LngLat exposition, LngLat position ) {
         Line2D.Double line1 = new Line2D.Double(position.lng(), position.lat(), exposition.lng(), exposition.lat());
 
         for (int i = 0; i < region.vertices().length - 1; i++) {
@@ -62,14 +61,15 @@ public class Astar {
         }
         return false;
     }
-    public double heuristic(LngLat a, LngLat b) {
-        double x1 = a.lng();
-        double y1 = a.lat();
-        double x2 = b.lng();
-        double y2 = b.lat();
-        return Math.abs(x1 - x2) + Math.abs(y1 - y2);
-    }
-    public double euclideanDistance(LngLat a, LngLat b) {
+    private static double heuristic(LngLat a, LngLat b) {
+        //Manhattan distance
+//        double x1 = a.lng();
+//        double y1 = a.lat();
+//        double x2 = b.lng();
+//        double y2 = b.lat();
+//        return Math.abs(x1 - x2) + Math.abs(y1 - y2);
+
+        //Euclidean Distance
         double x1 = a.lng();
         double y1 = a.lat();
         double x2 = b.lng();
@@ -80,6 +80,7 @@ public class Astar {
 
         return Math.sqrt(deltaX * deltaX + deltaY * deltaY);
     }
+
     public List<FlightPath> aStarSearch(LngLat start, LngLat destination, NamedRegion central, NamedRegion[] nonFlyZones) {
         Map<LngLat, Double> costSoFar = new HashMap<>();
         Map<LngLat, LngLat> cameFrom = new HashMap<>();//(LngLat nextPosition, LngLat parent)
@@ -90,8 +91,8 @@ public class Astar {
         Angle.put(start,999.0);
         //build priority queue to get the best next position
         PriorityQueue<LngLat> frontier = new PriorityQueue<>((loc1, loc2) -> {
-            double priority1 = costSoFar.get(loc1) + new Astar().euclideanDistance(loc1, destination);
-            double priority2 = costSoFar.get(loc2) + new Astar().euclideanDistance(loc2, destination);
+            double priority1 = costSoFar.get(loc1) + heuristic(loc1, destination);
+            double priority2 = costSoFar.get(loc2) + heuristic(loc2, destination);
             return Double.compare(priority1, priority2);
         });
 
@@ -101,9 +102,9 @@ public class Astar {
             LngLat current = frontier.poll();
 
             if (new LngLatHandler().isCloseTo(current, destination)) {
-                return new Astar().getShortestPath(start,current,cameFrom,Angle);
+                return getShortestPath(start,current,cameFrom,Angle);
             }
-            Map<LngLat, Double> neighbors = new Astar().neighbors(current,destination, central, nonFlyZones);
+            Map<LngLat, Double> neighbors = neighbors(current,destination, central, nonFlyZones);
             for (LngLat next : neighbors.keySet()) {
                 double newCost = costSoFar.get(current) + SystemConstants.DRONE_MOVE_DISTANCE;
                 if (!costSoFar.containsKey(next) || newCost < costSoFar.get(next)) {
@@ -117,7 +118,7 @@ public class Astar {
         }
        return null;
     }
-    public List<FlightPath> getShortestPath(LngLat start,LngLat destination, Map<LngLat, LngLat> cameFrom ,Map<LngLat, Double> Angle){
+    private List<FlightPath> getShortestPath(LngLat start,LngLat destination, Map<LngLat, LngLat> cameFrom ,Map<LngLat, Double> Angle){
         LngLat currentPathTile = destination;
         List<LngLat> path = new ArrayList<>();
         while (currentPathTile!=start){
@@ -145,6 +146,7 @@ public class Astar {
         }
         FlightPath hover = new FlightPath(destination.lng(),destination.lat(),999.0,destination.lng(),destination.lat());
         flightPaths.add(hover);
+        System.out.println("path size is: "+flightPaths.size());
         return flightPaths;
     }
 }

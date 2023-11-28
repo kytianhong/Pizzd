@@ -97,6 +97,9 @@ public class GetFlightPath {
     }
 
     public static void main(String[] args) {
+        // 记录程序开始时间
+        long startTime = System.nanoTime();
+
         if (args.length < 1){
             System.err.println("the base URL must be provided");
             System.exit(1);
@@ -122,6 +125,13 @@ public class GetFlightPath {
         NamedRegion central = new GetFlightPath().getCentralArea(baseUrl);
 
         new GetFlightPath().getFlightPath(validatedOrder,central,nonFlyZones,date);
+
+        // 记录程序结束时间
+        long endTime = System.nanoTime();
+        // 计算运行时间
+        double executionTime = (endTime - startTime) / 1e9;
+        // 打印运行时间
+        System.out.println("程序运行时间: " + executionTime + " 秒");
     }
 }
 

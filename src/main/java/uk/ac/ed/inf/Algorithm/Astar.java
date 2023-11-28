@@ -66,13 +66,11 @@ public class Astar {
      */
     private boolean intersects(NamedRegion region, LngLat exposition, LngLat position ) {
         Line2D.Double line1 = new Line2D.Double(position.lng(), position.lat(), exposition.lng(), exposition.lat());
-
         for (int i = 0; i < region.vertices().length - 1; i++) {
             Line2D.Double line2 = new Line2D.Double(region.vertices()[i].lng(), region.vertices()[i].lat()
                     , region.vertices()[i+1].lng(), region.vertices()[i+1].lat());
             if(line1.intersectsLine(line2)){
-//                System.out.println("相交，返回true");
-                return true;//相交，返回true
+                return true;
             }
         }
         return false;

@@ -16,29 +16,22 @@ import java.util.List;
 
 public class GeoJSONGenerator {
     public void generatorGeoJSON(List<FlightPath> flightPaths, LocalDate date) {
-
-        // new a feature collector
-        FeatureCollection featureCollection = new FeatureCollection();
-        //set coordinate by stream and collector
-        List<Double[]> coordinates = new ArrayList<>();
+        List<Double[]> coordinates = new ArrayList<>();//set coordinate by stream and collector
         for (FlightPath flightPath : flightPaths) {
+            //add coordinate of each position to coordinate list
             coordinates.add(new Double[]{flightPath.fromLongitude(), flightPath.fromLatitude()}) ;
         }
         // new a Geometry to contain coordinates
         Geometry geometry = new Geometry(coordinates);
-        // initialize the type to line string
-        geometry.setType("LineString");
-        //new a new feature
+        geometry.setType("LineString");// initialize the type to line string
+        // new a new feature to contain geometry and property
         GeoJSONFeature feature = new GeoJSONFeature();
-        // set feature type -> Feature
-        feature.setType("Feature");
-        // set geometry into feature
-        feature.setGeometry(geometry);
-        feature.setProperties(new Property());
-        // set this feature to feature collector
-        featureCollection.addFeature(feature);
-        // Add properties if needed
-        // feature.setProperties(properties);
+        feature.setType("Feature");// set feature type -> Feature
+        feature.setGeometry(geometry); // set geometry into feature
+        feature.setProperties(new Property());// set property into feature
+        // new a feature collector
+        FeatureCollection featureCollection = new FeatureCollection();
+        featureCollection.addFeature(feature);// set this feature to FeatureCollector
 
         try {
             String formattedDate = date.toString();

@@ -22,16 +22,11 @@ public class OrderProcess {
     private static final String ORDER_URL = "orders";
     private static final String RESTAURANT_URL = "restaurants";
     public Map<Order, LngLat> getValidOrder(String baseUrl, LocalDate date) {
-
         ObjectMapper mapper = new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
         try {
-//            Order[] orders = mapper.readValue(new URL(baseUrl + ORDER_URL), Order[].class);
             Order[] orders = mapper.readValue(new URL(baseUrl + ORDER_URL + "/" + date.toString()), Order[].class);
-            System.out.println("read all " + orders.length + " orders");
             Restaurant[] restaurants = mapper.readValue(new URL(baseUrl + RESTAURANT_URL), Restaurant[].class);
-            System.out.println("read all " + restaurants.length + " restaurants");
-
             //check whether there is at least one valid order
             if (orders.length<1){
                 System.err.println("The date is invalid, no order in this day");
@@ -40,18 +35,14 @@ public class OrderProcess {
             //validate orders
             Map<Order,LngLat> extractedOrders = new HashMap<>();
             for (Order i : orders) {
-//                if (i.getOrderDate().equals(date)) {
-                    Order toBeAdd =  new OrderValidator().validateOrder(i,restaurants);
-                    if (toBeAdd.getOrderValidationCode().equals(OrderValidationCode.NO_ERROR)){
-                        //get destination
-                        Restaurant restaurant = getRestaurant(i.getPizzasInOrder(),restaurants);
-                        toBeAdd.setOrderStatus(OrderStatus.DELIVERED);
-                        extractedOrders.put(toBeAdd,restaurant.location());
-                    }
-//                }
+                Order toBeAdd =  new OrderValidator().validateOrder(i,restaurants);
+                if (toBeAdd.getOrderValidationCode().equals(OrderValidationCode.NO_ERROR)){
+                    //get destination
+                    Restaurant restaurant = getRestaurant(i.getPizzasInOrder(),restaurants);
+                    toBeAdd.setOrderStatus(OrderStatus.DELIVERED);
+                    extractedOrders.put(toBeAdd,restaurant.location());
+                }
             }
-
-            System.out.println("validated "+extractedOrders.size()+" orders in "+ date.toString());
             return extractedOrders;
 
         } catch (IOException e) {
@@ -89,7 +80,6 @@ public class OrderProcess {
             String formattedDate = date.toString();
             String fileName = "deliveries-" + formattedDate + ".json";
             objectMapper.writeValue(new File("resultfiles/"+fileName), deliveriesList);
-            System.out.println("Dated orders saved to resultfiles/"+fileName);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

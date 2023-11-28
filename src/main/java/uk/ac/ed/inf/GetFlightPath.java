@@ -25,8 +25,8 @@ public class GetFlightPath {
         ObjectMapper mapper = new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
         try {
+            //read all NONFLYING zones
             NamedRegion[] nonFlyZones = mapper.readValue(new URL(baseUrl + NO_FLY_ZONE_URL), NamedRegion[].class);
-            System.out.println("read all NO FLY ZONE");
             return nonFlyZones;
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -37,8 +37,8 @@ public class GetFlightPath {
         ObjectMapper mapper = new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
         try {
+            //read all central area
             NamedRegion central = mapper.readValue(new URL(baseUrl + CENTRAL_AREA_URL), NamedRegion.class);
-            System.out.println("read all central area");
             return central;
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -64,19 +64,17 @@ public class GetFlightPath {
             toWriteFlights.addAll(aTr);
             toWriteFlights.addAll(rTa);
         }
-        new GetFlightPath().writeFlightPath( toWriteFlights, date, validatedOrder );
-        new GeoJSONGenerator().generatorGeoJSON(droneMoveList,date);
+        new GetFlightPath().writeFlightPath( toWriteFlights, date, validatedOrder );// write FlightPath file
+        new GeoJSONGenerator().generatorGeoJSON(droneMoveList,date);// write Drone move file
     }
     private List<ToWriteFlight> restoreFlightPath(String orderNo, List<FlightPath> flightPath){
         // rebuild the write_flight_path
         List<ToWriteFlight> f = flightPath.stream()
                 .map(p -> new ToWriteFlight(
                         orderNo,
-                        p.fromLongitude(),
-                        p.fromLatitude(),
+                        p.fromLongitude(), p.fromLatitude(),
                         p.angle(),
-                        p.toLongitude(),
-                        p.toLatitude()
+                        p.toLongitude(), p.toLatitude()
                 )).toList();
         return f;
     }
@@ -88,7 +86,7 @@ public class GetFlightPath {
             String formattedDate = date.toString();
             String fileName = "flightpath-" + formattedDate + ".json";
             objectMapper.writeValue(new File("resultfiles/"+fileName), flightList);
-            System.out.println("FlightPath saved to resultfiles/"+fileName);
+//            System.out.println("FlightPath saved to resultfiles/"+fileName);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -97,9 +95,6 @@ public class GetFlightPath {
     }
 
     public static void main(String[] args) {
-        // 记录程序开始时间
-        long startTime = System.nanoTime();
-
         if (args.length < 1){
             System.err.println("the base URL must be provided");
             System.exit(1);
@@ -126,12 +121,6 @@ public class GetFlightPath {
 
         new GetFlightPath().getFlightPath(validatedOrder,central,nonFlyZones,date);
 
-        // 记录程序结束时间
-        long endTime = System.nanoTime();
-        // 计算运行时间
-        double executionTime = (endTime - startTime) / 1e9;
-        // 打印运行时间
-        System.out.println("程序运行时间: " + executionTime + " 秒");
     }
 }
 

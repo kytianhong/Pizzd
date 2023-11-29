@@ -40,7 +40,7 @@ public class GeoJSONGenerator {
             mapper.configure(SerializationFeature.INDENT_OUTPUT, true);
             // Serialize the GeoJSON feature to a file
             mapper.writeValue(new File("resultfiles/"+fileName), featureCollection);
-//            System.out.println("DroneRoutine saved to resultfiles/"+fileName);
+            System.out.println("DroneRoutine saved to resultfiles/"+fileName);
         } catch (IOException e) {
             e.printStackTrace();
         }

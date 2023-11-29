@@ -27,6 +27,7 @@ public class GetFlightPath {
         try {
             //read all NONFLYING zones
             NamedRegion[] nonFlyZones = mapper.readValue(new URL(baseUrl + NO_FLY_ZONE_URL), NamedRegion[].class);
+            System.out.println("read all " + nonFlyZones.length + " NO FLY ZONEs");
             return nonFlyZones;
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -39,6 +40,7 @@ public class GetFlightPath {
         try {
             //read all central area
             NamedRegion central = mapper.readValue(new URL(baseUrl + CENTRAL_AREA_URL), NamedRegion.class);
+            System.out.println("Read all central area");
             return central;
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -63,6 +65,8 @@ public class GetFlightPath {
             //add all flight path of current order into final flight path list
             toWriteFlights.addAll(aTr);
             toWriteFlights.addAll(rTa);
+            int FlightLength =  aTr.size()+rTa.size();
+            System.out.println("Order: "+i.getOrderNo() + " has totally " + FlightLength + " flightpath steps");
         }
         new GetFlightPath().writeFlightPath( toWriteFlights, date, validatedOrder );// write FlightPath file
         new GeoJSONGenerator().generatorGeoJSON(droneMoveList,date);// write Drone move file
@@ -86,7 +90,7 @@ public class GetFlightPath {
             String formattedDate = date.toString();
             String fileName = "flightpath-" + formattedDate + ".json";
             objectMapper.writeValue(new File("resultfiles/"+fileName), flightList);
-//            System.out.println("FlightPath saved to resultfiles/"+fileName);
+            System.out.println("FlightPath saved to resultfiles/"+fileName);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -95,6 +99,7 @@ public class GetFlightPath {
     }
 
     public static void main(String[] args) {
+        long startTime = System.nanoTime();// record start time
         if (args.length < 1){
             System.err.println("the base URL must be provided");
             System.exit(1);
@@ -121,6 +126,9 @@ public class GetFlightPath {
 
         new GetFlightPath().getFlightPath(validatedOrder,central,nonFlyZones,date);
 
+        long endTime = System.nanoTime();// record end time
+        double executionTime = (endTime - startTime) / 1e9;// calculate running time
+        System.out.println("running time: " + executionTime + " s");
     }
 }
 

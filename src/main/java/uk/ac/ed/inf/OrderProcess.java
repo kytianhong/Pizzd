@@ -27,6 +27,8 @@ public class OrderProcess {
         try {
             Order[] orders = mapper.readValue(new URL(baseUrl + ORDER_URL + "/" + date.toString()), Order[].class);
             Restaurant[] restaurants = mapper.readValue(new URL(baseUrl + RESTAURANT_URL), Restaurant[].class);
+            System.out.println("read all " + orders.length + " orders in " + date);
+            System.out.println("read all " + restaurants.length + " restaurants");
             //check whether there is at least one valid order
             if (orders.length<1){
                 System.err.println("The date is invalid, no order in this day");
@@ -43,6 +45,7 @@ public class OrderProcess {
                     extractedOrders.put(toBeAdd,restaurant.location());
                 }
             }
+            System.out.println("validated "+extractedOrders.size()+" orders in "+ date);
             return extractedOrders;
 
         } catch (IOException e) {
@@ -80,6 +83,7 @@ public class OrderProcess {
             String formattedDate = date.toString();
             String fileName = "deliveries-" + formattedDate + ".json";
             objectMapper.writeValue(new File("resultfiles/"+fileName), deliveriesList);
+            System.out.println("Deliveries saved to resultfiles/"+fileName);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

@@ -27,7 +27,7 @@ public class GetFlightPath {
         try {
             //read all NONFLYING zones
             NamedRegion[] nonFlyZones = mapper.readValue(new URL(baseUrl + NO_FLY_ZONE_URL), NamedRegion[].class);
-            System.out.println("read all " + nonFlyZones.length + " NO FLY ZONEs");
+            System.out.println("Read all " + nonFlyZones.length + " NO FLY ZONEs");
             return nonFlyZones;
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -50,6 +50,7 @@ public class GetFlightPath {
         //new a list which contain the final flight path list of all orders
         List<FlightPath> droneMoveList=new ArrayList<>();
         List<ToWriteFlight> toWriteFlights = new ArrayList<>();
+        System.out.println("Generating flight path...");
         for (Order i :validatedOrder.keySet()) {
             // get the corresponding destination
             LngLat destination = validatedOrder.get(i);
@@ -66,10 +67,11 @@ public class GetFlightPath {
             toWriteFlights.addAll(aTr);
             toWriteFlights.addAll(rTa);
             int FlightLength =  aTr.size()+rTa.size();
-            System.out.println("Order: "+i.getOrderNo() + " has totally " + FlightLength + " flightpath steps");
+            System.out.println("Order: "+i.getOrderNo() + " has totally " + FlightLength + " drone movement steps");
         }
         new GetFlightPath().writeFlightPath( toWriteFlights, date, validatedOrder );// write FlightPath file
         new GeoJSONGenerator().generatorGeoJSON(droneMoveList,date);// write Drone move file
+        System.out.println("There are totally " + toWriteFlights.size() + " drone movement steps in " + date);
     }
     private List<ToWriteFlight> restoreFlightPath(String orderNo, List<FlightPath> flightPath){
         // rebuild the write_flight_path
@@ -128,7 +130,7 @@ public class GetFlightPath {
 
         long endTime = System.nanoTime();// record end time
         double executionTime = (endTime - startTime) / 1e9;// calculate running time
-        System.out.println("running time: " + executionTime + " s");
+        System.out.println("Running time: " + executionTime + " s");
     }
 }
 

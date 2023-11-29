@@ -27,14 +27,15 @@ public class OrderProcess {
         try {
             Order[] orders = mapper.readValue(new URL(baseUrl + ORDER_URL + "/" + date.toString()), Order[].class);
             Restaurant[] restaurants = mapper.readValue(new URL(baseUrl + RESTAURANT_URL), Restaurant[].class);
-            System.out.println("read all " + orders.length + " orders in " + date);
-            System.out.println("read all " + restaurants.length + " restaurants");
+            System.out.println("Read all " + orders.length + " orders in " + date);
+            System.out.println("Read all " + restaurants.length + " restaurants");
             //check whether there is at least one valid order
             if (orders.length<1){
                 System.err.println("The date is invalid, no order in this day");
                 System.exit(1);
             }
             //validate orders
+            System.out.println("Validating orders:");
             Map<Order,LngLat> extractedOrders = new HashMap<>();
             for (Order i : orders) {
                 Order toBeAdd =  new OrderValidator().validateOrder(i,restaurants);
@@ -43,9 +44,11 @@ public class OrderProcess {
                     Restaurant restaurant = getRestaurant(i.getPizzasInOrder(),restaurants);
                     toBeAdd.setOrderStatus(OrderStatus.DELIVERED);
                     extractedOrders.put(toBeAdd,restaurant.location());
+                }else {
+                    System.out.println("Order " +toBeAdd.getOrderNo() + " is invalid with validation code: " + toBeAdd.getOrderValidationCode());
                 }
             }
-            System.out.println("validated "+extractedOrders.size()+" orders in "+ date);
+            System.out.println(extractedOrders.size()+" valid orders in "+ date);
             return extractedOrders;
 
         } catch (IOException e) {

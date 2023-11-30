@@ -57,7 +57,7 @@ public class GetFlightPath {
             //get the flight path of order i
             List<FlightPath> AppleToRest = new Astar().aStarSearch(APPLETON,destination,central,nonFlyZones);
             LngLat restaurant = new LngLat(AppleToRest.get(AppleToRest.size()-1).toLongitude(),AppleToRest.get(AppleToRest.size()-1).toLatitude());
-            List<FlightPath> RestToApple = new Astar().aStarSearch(destination,APPLETON,central,nonFlyZones);
+            List<FlightPath> RestToApple = new Astar().aStarSearch(restaurant,APPLETON,central,nonFlyZones);
             //add all drone move path of current order into final flight path list
             droneMoveList.addAll(AppleToRest);
             droneMoveList.addAll(RestToApple);

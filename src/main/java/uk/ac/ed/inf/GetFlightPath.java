@@ -70,7 +70,8 @@ public class GetFlightPath {
             int FlightLength =  aTr.size()+rTa.size();
             System.out.println("Order: "+i.getOrderNo() + " has totally " + FlightLength + " drone movement steps");
         }
-        new GetFlightPath().writeFlightPath( toWriteFlights, date, validatedOrder );// write FlightPath file
+        new OrderProcess().writeDeliveries(validatedOrder.keySet(), date);// write deliver
+        new GetFlightPath().writeFlightPath( toWriteFlights, date);// write FlightPath file
         new GeoJSONGenerator().generatorGeoJSON(droneMoveList,date);// write Drone move file
         System.out.println("There are totally " + toWriteFlights.size() + " drone movement steps in " + date);
     }
@@ -85,7 +86,7 @@ public class GetFlightPath {
                 )).toList();
         return f;
     }
-    public void writeFlightPath(List<ToWriteFlight> flightList, LocalDate date,Map<Order, LngLat> validatedOrder ){
+    public void writeFlightPath(List<ToWriteFlight> flightList, LocalDate date ){
         //write file
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
@@ -97,8 +98,6 @@ public class GetFlightPath {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        // write deliver
-        new OrderProcess().writeDeliveries(validatedOrder.keySet(), date);
     }
 
     public static void main(String[] args) {

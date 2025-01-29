@@ -1,0 +1,38 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Compile Java Code
+        run: mvn compile
+
+      - name: Run Static Code Analysis (Checkstyle)
+        run: mvn checkstyle:check
+
+      - name: Run SpotBugs Analysis
+        run: mvn spotbugs:check
+
+      - name: Run Unit Tests with JUnit
+        run: mvn test
+
+      - name: Generate Coverage Report (JaCoCo)
+        run: mvn jacoco:report

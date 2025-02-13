@@ -22,20 +22,20 @@ public class Astar {
         // find whether destination is in central area
         boolean destInCentral = new LngLatHandler().isInCentralArea(destination,central);
         //if current position and destination are both in central area
-        if (isCentral && destInCentral){
-            while ( angle < 360) {
-                // calculate next position
-                LngLat exposition = new LngLatHandler().nextPosition(position, angle);
-                boolean nextInCentral = new LngLatHandler().isInCentralArea(exposition,central);
-                //make sure next position does not leave central area
-                if(nextInCentral){
-                    //make sure next position is not in none fly region, if not, add it into neighbour list
-                    if (!(isNonFly(exposition,nonFlyZones,position))){neighbors.put(exposition, angle);}
-                }
-                angle += angleIncrement;// angle incremental
-            }
-        }//if both current position and destination are not in central area
-        else{
+//        if (isCentral && destInCentral){
+//            while ( angle < 360) {
+//                // calculate next position
+//                LngLat exposition = new LngLatHandler().nextPosition(position, angle);
+//                boolean nextInCentral = new LngLatHandler().isInCentralArea(exposition,central);
+//                //make sure next position does not leave central area
+//                if(nextInCentral){
+//                    //make sure next position is not in none fly region, if not, add it into neighbour list
+//                    if (!(isNonFly(exposition,nonFlyZones,position))){neighbors.put(exposition, angle);}
+//                }
+//                angle += angleIncrement;// angle incremental
+//            }
+//        }//if both current position and destination are not in central area
+//        else{
             while ( angle < 360) {
                 // calculate next position
                 LngLat exposition = new LngLatHandler().nextPosition(position, angle);
@@ -43,7 +43,7 @@ public class Astar {
                 if (!(isNonFly(exposition,nonFlyZones,position))){neighbors.put(exposition, angle);}
                 angle += angleIncrement;// angle incremental
             }
-        }
+//        }
         return neighbors;// return neighbour HashMap
     }
     /*find whether next node's in none fly region or next step intersect with none fly region
@@ -66,13 +66,13 @@ public class Astar {
      */
     private boolean intersects(NamedRegion region, LngLat exposition, LngLat position ) {
         Line2D.Double line1 = new Line2D.Double(position.lng(), position.lat(), exposition.lng(), exposition.lat());
-        for (int i = 0; i < region.vertices().length - 1; i++) {
-            Line2D.Double line2 = new Line2D.Double(region.vertices()[i].lng(), region.vertices()[i].lat()
-                    , region.vertices()[i+1].lng(), region.vertices()[i+1].lat());
-            if(line1.intersectsLine(line2)){
-                return true;
-            }
-        }
+//        for (int i = 0; i < region.vertices().length - 1; i++) {
+//            Line2D.Double line2 = new Line2D.Double(region.vertices()[i].lng(), region.vertices()[i].lat()
+//                    , region.vertices()[i+1].lng(), region.vertices()[i+1].lat());
+//            if(line1.intersectsLine(line2)){
+//                return true;
+//            }
+//        }
         return false;
     }
     /*calculate heuristic distance
@@ -97,6 +97,9 @@ public class Astar {
      build A* research from start position to destination
      */
     public List<FlightPath> aStarSearch(LngLat start, LngLat destination, NamedRegion central, NamedRegion[] nonFlyZones) {
+        if(destination.lng()>-2||destination.lng()<-4||destination.lat()>56){
+                return null;
+        }
         // create a HashMap to contain current position and its cost so far
         Map<LngLat, Double> costSoFar = new HashMap<>();
         // create a HashMap to contain nextPosition and its corresponding parents
@@ -147,10 +150,10 @@ public class Astar {
             path.add(currentPathTile);// add the current path tile to the shortest path array
             currentPathTile = cameFrom.get(currentPathTile);// get the current path tile's parent from cameFrom hashmap
             // Check for null to avoid potential NullPointerException
-            if (currentPathTile == null) {
-                // Handle the case where there's no valid path
-                return Collections.emptyList();
-            }
+//            if (currentPathTile == null) {
+//                // Handle the case where there's no valid path
+//                return Collections.emptyList();
+//            }
         }
         path.add(start);// add start position to the shortest path list
         Collections.reverse(path);// reverse the list to make sure it is from start to destination

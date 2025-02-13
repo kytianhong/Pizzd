@@ -101,37 +101,36 @@ public class GetFlightPath {
     }
 
     public static void main(String[] args) {
-        long startTime = System.nanoTime();// record start time
-        if (args.length < 1){
-            System.err.println("the base URL must be provided");
-            System.exit(1);
-        }
-
-        String baseUrl = args[1];
-        LocalDate date = LocalDate.parse(args[0]);
-        if (!baseUrl.endsWith("/")){
-            baseUrl += "/";
-        }
-
-        try {
-            var temp = new URL(baseUrl);
-        } catch (Exception x) {
-            System.err.println("The URL is invalid: " + x);
-            System.exit(2);
-        }
-
-        // call order process to get the day's order and its corresponding destination
-        Map<Order, LngLat> validatedOrder = new OrderProcess().getValidOrder(baseUrl,date);
-        //call get nonFlyZone and central method
-        NamedRegion[] nonFlyZones = new GetFlightPath().getNonFlyZones(baseUrl);
-        NamedRegion central = new GetFlightPath().getCentralArea(baseUrl);
-
-        new GetFlightPath().getFlightPath(validatedOrder,central,nonFlyZones,date);
-
-        long endTime = System.nanoTime();// record end time
-        double executionTime = (endTime - startTime) / 1e9;// calculate running time
-        System.out.println("Running time: " + executionTime + " s");
+//        long startTime = System.nanoTime();// record start time
+//        if (args.length < 1){
+//            System.err.println("the base URL must be provided");
+//            System.exit(1);
+//        }
+//
+//        String baseUrl = args[1];
+//        LocalDate date = LocalDate.parse(args[0]);
+//        if (!baseUrl.endsWith("/")){
+//            baseUrl += "/";
+//        }
+//
+//        try {
+//            var temp = new URL(baseUrl);
+//        } catch (Exception x) {
+//            System.err.println("The URL is invalid: " + x);
+//            System.exit(2);
+//        }
+//
+//        // call order process to get the day's order and its corresponding destination
+//        Map<Order, LngLat> validatedOrder = new OrderProcess().getValidOrder(baseUrl);
+//        //call get nonFlyZone and central method
+//        NamedRegion[] nonFlyZones = new GetFlightPath().getNonFlyZones(baseUrl);
+//        NamedRegion central = new GetFlightPath().getCentralArea(baseUrl);
+//
+//        new GetFlightPath().getFlightPath(validatedOrder,central,nonFlyZones,date);
+//
+//        long endTime = System.nanoTime();// record end time
+//        double executionTime = (endTime - startTime) / 1e9;// calculate running time
+//        System.out.println("Running time: " + executionTime + " s");
     }
 }
-
 

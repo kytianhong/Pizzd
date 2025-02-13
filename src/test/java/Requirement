@@ -1,0 +1,37 @@
+Drone assignment (dispatch nearest drone)	OrderProcessingTest.java
+Delivery status updates 	                OrderProcessingTest.java
+Route optimization (<25ms)		            PerformanceTest.java
+100% delivery success		                FunctionalTest.java, PerformanceTest.java
+Invalid addresses handled correctly		    EdgeCaseTest.java, OrderProcessingTest.java
+System-level testing (end-to-end workflows)	OrderProcessingTest.java, StressTest.java
+Integration testing (drone + order system)	PathfindingTest.java, IntegrationTest.java
+Unit testing (specific pathfinding)         PerformanceTest.java, EdgeCaseTest.java
+Handling simultaneous orders                StressTest.java
+Responding to invalid addresses             EdgeCaseTest.java
+Managing order rerouting                    PathfindingTest.java
+Performance and efficiency testing          PerformanceTest.java
+100% delivery success		                FunctionalTest.java, StressTest.java
+<1s route optimization time		            PerformanceTest.java
+Correct delivery rerouting		            EdgeCaseTest.java
+Stress testing at 20+ orders		        StressTest.java
+
+
+Functional testing for order processing		OrderProcessingTest.java
+Invalid address handling		            EdgeCaseTest.java
+Performance testing (<25ms)         		PerformanceTest.java
+Stress testing (20 concurrent orders)		StressTest.java
+
+High coverage func performance tests        Various test files
+Methodical input-output validation	        FunctionalTest.java, EdgeCaseTest.java
+Detection  of issues (reroute delays)		PathfindingTest.java
+Stress test under 20 orders	            	StressTest.java
+
+JUnit used for unit testing	                All test files
+Code coverage tracked with JaCoCo	        ci.yml (GitHub Actions)
+Timers to measure route optimization time	PerformanceTest.java
+Branch and statement coverage analyzed	    ci.yml, PerformanceTest.java
+
+Branch coverage ~75% (goal: 85%)	        ci.yml, JaCoCo reports
+Statement coverage ~85% (goal: 90%)	        ci.yml, JaCoCo reports
+Stress test maintains <1s response time	    PerformanceTest.java
+

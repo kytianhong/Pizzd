@@ -1,0 +1,8 @@
+Test Type	        File Name	                Purpose
+Order Validation	CheckOrderValidation.java	Ensures orders are correctly processed
+Pathfinding	        PathfindingTest.java	    Ensures A* algorithm computes correct paths
+Performance	        PerformanceTest.java	    Measures execution time of route calculations
+Stress Testing	    StressTest.java	            Ensures system can process 50+ orders concurrently
+Edge Cases	        EdgeCaseTest.java	        Tests rare failures like GPS errors & no valid paths
+Security	        SecurityTest.java	        Prevents unauthorized access to drone systems
+CI Pipeline	        .github/workflows/ci.yml	Automates testing & enforces quality rules

@@ -49,10 +49,10 @@ public class LngLatHandler implements LngLatHandling {
         if (centralArea == null){
             throw new IllegalArgumentException("the named region is null");
         }
-        if (centralArea.name().equals(SystemConstants.CENTRAL_REGION_NAME) == false) {
-            throw new IllegalArgumentException("the named region: " + centralArea.name() +
-                    " is not valid - must be: " + SystemConstants.CENTRAL_REGION_NAME);
-        }
+//        if (centralArea.name().equals(SystemConstants.CENTRAL_REGION_NAME) == false) {
+//            throw new IllegalArgumentException("the named region: " + centralArea.name() +
+//                    " is not valid - must be: " + SystemConstants.CENTRAL_REGION_NAME);
+//        }
         return isInRegion(point, centralArea);
     }
 

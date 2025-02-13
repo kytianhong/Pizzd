@@ -36,3 +36,15 @@ jobs:
 
       - name: Generate Coverage Report (JaCoCo)
         run: mvn jacoco:report
+
+      - name: Check JaCoCo Coverage (Min 85%)
+        run: mvn verify
+
+      - name: Upload JaCoCo Coverage Report
+        uses: actions/upload-artifact@v3
+        with:
+          name: jacoco-report
+          path: target/site/jacoco/index.html
+
+      - name: Deployment Simulation
+        run: java -jar target/PizzaDronz-1.0-SNAPSHOT.jar 2023-04-15 https://ilp-rest.azurewebsites.net cabbage

@@ -1,0 +1,39 @@
+1 Order Validation Tests
+CheckOrderValidation.java
+Ensures only valid orders are accepted
+Key Scenarios:Invalid card number, expired card, incorrect CVV
+Incorrect order total, too many pizzas, Orders from multiple restaurants, restaurant closed
+
+2.Pathfinding Tests
+File Name: PathfindingTest.java
+Purpose: Ensures A* algorithm computes valid paths
+Key Scenarios:Correctly finds shortest path;Avoids no-fly zones;Handles unreachable destinations
+
+
+3 Performance Tests
+ File Name: PerformanceTest.java
+Purpose: Ensures route calculation is under 1 second
+Key Scenarios:Measures execution time of A* algorithm
+Ensures performance scales with large maps
+
+4 Stress Tests
+File Name: StressTest.java
+Purpose: Ensures system can process 50+ orders efficiently
+Key Scenarios:Handles diverse delivery locations Ensures multiple concurrent pathfinding computations
+
+5 Edge Case Tests
+File Name: EdgeCaseTest.java
+Purpose: Tests rare failure scenarios
+Key Scenarios: No valid path exists Sudden GPS failure, Drone unable to reach customer location
+
+ 6 Security Tests
+File Name: SecurityTest.java
+Purpose: Ensures unauthorized drones cannot access restricted areas
+Key Scenarios: Unauthorized access attempts fail Only registered drones can process orders
+
+9 CI Pipeline
+File Name: .github/workflows/ci.yml
+Purpose: Automates building, testing, and deployment simulations
+Key Features: Runs all tests automatically on GitHub Actions
+Enforces 85% minimum code coverage revents merging if tests fail
+

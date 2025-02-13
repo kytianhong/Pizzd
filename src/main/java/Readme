@@ -1,0 +1,46 @@
+1
+Functional Requirements
+Order Processing: Validating and assigning delivery orders.  OrderProcess.java
+Drone Pathfinding: A* algorithm to compute the optimal delivery path.  Astar.java
+Flight Path Execution: Ensuring drones avoid no-fly zones while efficiently delivering orders.  GetFlightPath.java
+2
+Performance Requirements
+Route Calculation Time: Must within 1 second for efficiency.
+Concurrent Order Processing: System should handle at least 50 concurrent orders without performance degradation.
+Delivery Success Rate: 98%+ success rate under normal conditions.
+3
+Robustness and Security Requirements
+Drone Resilience: The system should handle simultaneous drone failures without service disruption.
+Weather Adaptation: Routes should be adaptable to high winds and adverse weather conditions.
+Data Security: Communication between drones, servers, and customers must be encrypted to prevent tampering.
+4
+Testing Strategy Alignment
+The testing approach included unit testing, integration testing, and stress testing.
+5
+Plan Structure
+A structured test plan was implemented, covering:
+Functional Tests: Order validation, path calculation, and drone movement.
+Performance Tests: Ensuring <1s route computation and 50+ concurrent orders.
+Stress Tests: Simulating extreme order loads.
+Edge Case Handling: Invalid orders, unreachable delivery locations
+6
+Instrumentation and Monitoring
+JaCoCo was used to monitor test coverage. JUnit was applied for automated test execution. Performance timers ensured response times met requirements.
+7
+Functional Testing Validated that:
+Orders are properly assigned to drones.
+The pathfinding algorithm computes optimal routes.
+Invalid inputs (e.g., wrong addresses) trigger correct error responses.
+8
+Performance and Stress Testing
+Simulated 20+ concurrent orders
+Simulated 50+ concurrent orders
+Route calculation time < 1 second
+9
+Boundary and Edge Case Testing
+Correct re-routing, Drone near a no-fly zone
+Correct rejection Customer location outside coverage
+10
+White-box and Black-box Testing
+Black-box testing: Verified system behavior with different inputs.
+White-box testing: Checked uncovered paths in A pathfinding logic.

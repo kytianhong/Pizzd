@@ -22,73 +22,56 @@ Testing Strategy Alignment
 The testing approach included unit testing, integration testing, and stress testing. However, security vulnerabilities (e.g., unauthorized drone access and communication encryption validation) need further attention.
 
 
-2. Design and Implement Test Plans (20%)
-2.1 Test Plan Structure
+3
 A structured test plan was implemented, covering:
 
 Functional Tests: Order validation, path calculation, and drone movement.
 Performance Tests: Ensuring <1s route computation and 50+ concurrent orders.
 Stress Tests: Simulating extreme order loads.
 Edge Case Handling: Invalid orders, unreachable delivery locations, and multiple drone failures.
-2.2 Instrumentation and Monitoring
+
+4 Instrumentation and Monitoring
 JaCoCo was used to monitor test coverage.
 JUnit was applied for automated test execution.
-Performance timers ensured response times met requirements.
-2.3 Gaps in Testing
-While the test plan effectively covered most functional aspects, it lacked rigorous testing for rare extreme failures (e.g., simultaneous drone breakdowns, GPS failures, and high-wind conditions).
+Performance timers ensured response times met requirement
+Gaps in Testing
+it lacked rigorous testing for rare extreme failures (e.g., simultaneous drone breakdowns, GPS failures, and high-wind conditions).
 
-Score: 17/20 – Well-structured test plan but lacking extreme failure simulations.
 
-3. Apply Testing Techniques (20%)
-3.1 Functional Testing
-Validated that:
-
+5
 Orders are properly assigned to drones.
 The pathfinding algorithm computes optimal routes.
 Invalid inputs (e.g., wrong addresses) trigger correct error responses.
-3.2 Performance and Stress Testing
-Simulated 20+ concurrent orders ✅ Passed
-Simulated 50+ concurrent orders ✅ Passed
-Route calculation time < 1 second ✅ Passed
-3.3 Boundary and Edge Case Testing
-Drone near a no-fly zone? ✅ Correct re-routing.
-Customer location outside coverage? ✅ Correct rejection.
-Incorrect GPS data? ❌ Not sufficiently tested.
-3.4 White-box and Black-box Testing
-Black-box testing: Verified system behavior with different inputs.
-White-box testing: Checked uncovered paths in A pathfinding logic*.
-3.5 Weaknesses in Testing
+Performance and Stress Testing:
+Simulated 20+ concurrent orders
+Simulated 50+ concurrent orders
+Route calculation time < 1 second
+Boundary and Edge Case Testing
+Correct re-routing Drone near a no-fly zone
+Customer location outside coverage Correct rejection.
+Incorrect GPS data Not sufficiently tested.
+White-box and Black-box Testing
+Black-box testing Verified system behavior with different inputs.
+White-box testing Checked uncovered paths in A pathfinding logic*.
+Weaknesses in Testing
 Rare failure conditions (multiple drones failing at once) were not fully tested.
 Score: 16/20 – Effective testing, but some critical failure scenarios remain untested.
 
-4. Evaluate Limitations (20%)
-4.1 Testing Gaps Identified
-Hardware Testing: No real drone hardware-in-the-loop testing was conducted.
-Environmental Conditions: High winds and GPS errors were not simulated.
-Security Testing: No explicit penetration testing was performed.
-4.2 Improvement Plan
-Simulate extreme conditions (e.g., simultaneous drone failures, high winds).
-Expand stress testing to include 100+ concurrent orders.
-Implement security testing to validate encryption and prevent drone hijacking.
-Introduce hardware-in-the-loop testing to validate real-world drone behavior.
-Score: 17/20 – Good identification of gaps, but hardware testing needs integration.
-
-5. Reviews, Inspections, and Automation (20%)
-5.1 Code Reviews
+Reviews, Inspections, and Automation
+Code Reviews
 Reviewed critical modules (pathfinding, order assignment, error handling).
 Identified redundant computations in pathfinding and optimized them.
 Improved error handling (added handling for missing orders).
-5.2 CI Pipeline Implementation
+CI Pipeline Implementation
 Implemented GitHub Actions-based CI pipeline:
-
 Code Compilation mvn compile
 Static Analysis: Checkstyle and SpotBugs
 Unit Testing: JUnit
 Code Coverage Report: JaCoCo (min 85%)
 Deployment Simulation: java -jar PizzaDronz-1.0-SNAPSHOT.jar
-5.3 Automation Improvements
+Automation Improvements
 Increased test automation using JUnit and JaCoCo.
 Enabled automated coverage checks (CI fails if <85% test coverage).
-5.4 Limitations in Reviews
+Limitations in Reviews
 Review criteria could have been more structured (e.g., checklist-based).
 Score: 18/20 – Strong CI pipeline and automation, but code reviews could be more structured.

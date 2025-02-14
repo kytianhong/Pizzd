@@ -9,10 +9,8 @@ Route Calculation Time: Must within 1 second for efficiency.
 Concurrent Order Processing: System should handle at least 50 concurrent orders without performance degradation.
 Delivery Success Rate: 98%+ success rate under normal conditions.
 3
-Robustness and Security Requirements
+Security Requirements
 Drone Resilience: The system should handle simultaneous drone failures without service disruption.
-Weather Adaptation: Routes should be adaptable to high winds and adverse weather conditions.
-Data Security: Communication between drones, servers, and customers must be encrypted to prevent tampering.
 4
 Testing Strategy Alignment
 The testing approach included unit testing, integration testing, and stress testing.
@@ -25,7 +23,8 @@ Stress Tests: Simulating extreme order loads.
 Edge Case Handling: Invalid orders, unreachable delivery locations
 6
 Instrumentation and Monitoring
-JaCoCo was used to monitor test coverage. JUnit was applied for automated test execution. Performance timers ensured response times met requirements.
+JaCoCo was used to monitor test coverage. JUnit was applied for automated test execution.
+Performance timers ensured response times met requirements.
 7
 Functional Testing Validated that:
 Orders are properly assigned to drones.
